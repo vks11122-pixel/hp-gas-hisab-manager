@@ -232,11 +232,20 @@ function openReport(tab){
   card.addEventListener("click",()=>openReport(["market","staff","cashbook"][i]));
 });
 function createFullPDFReport(){
-  const sections=[
-    ["दैनिक स्टॉक रिपोर्ट",state.stock],
-    ["मार्केट बकाया रिपोर्ट",state.market],
-    ["स्टाफ बकाया रिपोर्ट",state.staff],
-    ["जमा-खर्च रिपोर्ट",state.cashbook]
+    const latestBy=(rows,keyFn)=>{
+  const map=new Map();
+  (rows||[]).forEach(r=>{
+    const k=keyFn(r),old=map.get(k);
+    if(!old||(r.date||"")>=(old.date||"")) map.set(k,r);
+  });
+  return [...map.values()].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+};
+
+    const sections=[
+    ["दैनिक स्टॉक रिपोर्ट",latestBy(state.stock,r=>r.type)],
+    ["मार्केट बकाया रिपोर्ट",latestBy(state.market,r=>r.name+"|"+r.type)],
+    ["स्टाफ बकाया रिपोर्ट",latestBy(state.staff,r=>r.name+"|"+r.type)],
+    ["जमा-खर्च रिपोर्ट",(state.cashbook||[]).slice(-1)]
   ];
 
   const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({
