@@ -216,7 +216,22 @@ $("exportBackup").onclick=()=>{const payload={app:"HP Gas Hisab Manager 2.0",ver
 $("importBackupBtn").onclick=()=>$("importBackupFile").click();
 $("importBackupFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());const d=payload.data;if(!d||!Array.isArray(d.stock)||!Array.isArray(d.market)||!Array.isArray(d.staff))throw new Error("गलत बैकअप फाइल");if(!confirm("मौजूदा फोन डेटा की जगह बैकअप का डेटा लोड होगा। पहले मौजूदा डेटा का बैकअप लें। क्या जारी रखें?"))return;state=d;state.cashbook=Array.isArray(state.cashbook)?state.cashbook:[];targetTotals=payload.targetTotals||targetTotals;localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));save();$("backupMessage").textContent="बैकअप सफलतापूर्वक वापस लोड हो गया।";alert("बैकअप वापस आ गया।");}catch(err){$("backupMessage").textContent="बैकअप नहीं खुला: "+err.message;}finally{e.target.value="";}});
 
-render();previewStock();previewMarket();previewStaff();carryStockOpening();
+function openReport(tab){
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===tab));
+  window.scrollTo(0,0);
+}
+["totalFilled","totalEmpty"].forEach(id=>{
+  const card=$(id).parentElement;
+  card.style.cursor="pointer";
+  card.addEventListener("click",()=>openReport("stock"));
+});
+["marketDue","staffDue","cashNet"].forEach((id,i)=>{
+  const card=$(id).parentElement;
+  card.style.cursor="pointer";
+  card.addEventListener("click",()=>openReport(["market","staff","cashbook"][i]));
+});
+ render();previewStock();previewMarket();previewStaff();carryStockOpening();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
 </script>
 </body></html>
