@@ -231,6 +231,60 @@ function openReport(tab){
   card.style.cursor="pointer";
   card.addEventListener("click",()=>openReport(["market","staff","cashbook"][i]));
 });
+function createFullPDFReport(){
+  const sections=[
+    ["दैनिक स्टॉक रिपोर्ट",state.stock],
+    ["मार्केट बकाया रिपोर्ट",state.market],
+    ["स्टाफ बकाया रिपोर्ट",state.staff],
+    ["जमा-खर्च रिपोर्ट",state.cashbook]
+  ];
+
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+
+  let html="";
+  sections.forEach(([title,rows])=>{
+    html+=`<h2>${title}</h2>`;
+    if(!rows||!rows.length){
+      html+="<p>कोई एंट्री उपलब्ध नहीं</p>";
+      return;
+    }
+    const keys=[...new Set(rows.flatMap(r=>Object.keys(r)))];
+    html+="<table><thead><tr>"+keys.map(k=>`<th>${esc(k)}</th>`).join("")+"</tr></thead><tbody>";
+    rows.forEach(r=>{
+      html+="<tr>"+keys.map(k=>`<td>${esc(typeof r[k]==="object"?JSON.stringify(r[k]):r[k])}</td>`).join("")+"</tr>";
+    });
+    html+="</tbody></table>";
+  });
+
+  const w=window.open("","_blank");
+  if(!w){alert("रिपोर्ट खोलने के लिए Pop-ups की अनुमति दें।");return;}
+  w.document.write(`<!DOCTYPE html><html lang="hi"><meta charset="UTF-8">
+  <title>HP Gas विस्तृत रिपोर्ट</title>
+  <style>
+  body{font-family:Arial,sans-serif;padding:18px;color:#222}
+  h1{text-align:center;color:#075477}
+  h2{margin-top:28px;color:#075477}
+  table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:11px}
+  th,td{border:1px solid #999;padding:6px;text-align:left;word-break:break-word}
+  th{background:#e5f1f7}
+  @media print{button{display:none}}
+  </style>
+  <h1>HP Gas हिसाब मैनेजर 2.0</h1>
+  <p>विस्तृत रिपोर्ट | तारीख: ${new Date().toLocaleDateString("hi-IN")}</p>
+  ${html}
+  <button onclick="window.print()">PDF सेव / प्रिंट करें</button>
+  </html>`);
+  w.document.close();
+}
+
+const pdfButton=document.createElement("button");
+pdfButton.textContent="📄 पूरी रिपोर्ट PDF में तैयार करें";
+pdfButton.className="primary";
+pdfButton.style.cssText="width:100%;margin:12px 0;padding:16px;border-radius:12px;font-size:17px";
+pdfButton.addEventListener("click",createFullPDFReport);
+$("dashboard").appendChild(pdfButton);
  render();previewStock();previewMarket();previewStaff();carryStockOpening();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
 </script>
