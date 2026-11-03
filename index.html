@@ -1,258 +1,222 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#082f55">
-<meta name="description" content="माँ अगवानी HP गैस ग्रामीण वितरक का दैनिक सिलेंडर स्टॉक और हॉकर बकाया रजिस्टर">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icons/icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
-<title>HP Gas हिसाब मैनेजर</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123b5d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><meta name="description" content="HP Gas हिसाब मैनेजर">
 <style>
-:root{--navy:#082f55;--blue:#14558a;--red:#d62835;--green:#087f5b;--amber:#a65b00;--bg:#f2f5f9;--line:#dce3eb;--ink:#172536;--muted:#617184}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;font-size:14px}
-header{background:var(--navy);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #001a3333}
-.head{max-width:1200px;margin:auto;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.brand{min-width:0}.brand h1{font-size:18px;margin:0;font-weight:800}.brand p{font-size:12px;color:#c9dff1;margin:4px 0 0}
-.actions{display:flex;gap:7px;flex-wrap:wrap}.btn{border:0;border-radius:9px;padding:10px 12px;font-weight:700;font:inherit;cursor:pointer;background:#e8eef5;color:#17324c}.btn.primary{background:#0b8b65;color:white}.btn.gold{background:#ffc247;color:#302000}.btn.dark{background:#16466f;color:white;border:1px solid #46749a}.btn.red{background:#b4232c;color:white}.btn.small{padding:7px 9px;font-size:12px}
-main{max-width:1200px;margin:auto;padding:16px}.toolbar{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-input,select{font:inherit;border:1px solid #cbd5e1;border-radius:8px;padding:9px;background:#fff;color:var(--ink);max-width:100%;min-width:0}label{font-size:12px;color:#43546a;font-weight:700;display:block;margin-bottom:5px}
-.tabs{display:flex;gap:6px;overflow:auto;margin:0 0 14px}.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:9px;font-weight:700;color:#42556a}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}.card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;min-width:0}.card .k{font-size:12px;color:var(--muted);font-weight:700}.card .v{font-size:26px;font-weight:850;margin:5px 0}.card .sub{font-size:11px;color:var(--muted)}
-.panel{background:#fff;border:1px solid var(--line);border-radius:13px;margin-bottom:14px;overflow:hidden}.panelhead{padding:14px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.panelhead h2{font-size:16px;margin:0}.panelhead p{font-size:12px;color:var(--muted);margin:4px 0 0}
-.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:900px}th,td{padding:10px 9px;border-bottom:1px solid #e5eaf0;text-align:center;white-space:nowrap}th{font-size:11px;color:#405267;background:#f3f6fa;position:sticky;top:0}td:first-child,th:first-child{text-align:left}tbody tr:hover{background:#fafcff}.type{font-weight:800}.type small{display:block;color:var(--muted);font-weight:500}.blue{background:#eef5ff}.green{background:#e9f7f1;color:#075c42;font-weight:800}.sky{background:#edf8fc;color:#07516d;font-weight:800}.amber{background:#fff6e6;color:#8a4a00;font-weight:800}.redtxt{color:#b4232c;font-weight:800}.total{font-weight:900;background:#edf0f4}
-.notegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px;color:#536477}.note b{display:block;color:#26394d;margin-bottom:4px}
-.hidden{display:none!important}.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field{min-width:0}.modal{position:fixed;inset:0;background:#061a2ccc;z-index:20;display:flex;align-items:center;justify-content:center;padding:12px;overflow:auto}.dialog{width:min(650px,100%);background:#fff;border-radius:15px;padding:17px;max-height:95vh;overflow:auto;box-shadow:0 15px 50px #001a3344}.dialog h2{margin:0 0 5px;font-size:18px}.dialog .hint{color:var(--muted);font-size:12px;margin:0 0 14px}.section{padding:12px;border-radius:11px;margin:10px 0}.section h3{font-size:13px;margin:0 0 9px}.section.bluebg{background:#f0f6ff;border:1px solid #d6e6fa}.section.skybg{background:#f0f9fc;border:1px solid #d5edf4}.section.goldbg{background:#fff8ec;border:1px solid #f3dfb8}.calc{text-align:right;font-weight:800;margin-top:8px}.dialogfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
-.status{padding:12px;border-radius:10px;margin-top:10px;font-weight:700}.ok{background:#e8f7ef;color:#086344}.warn{background:#fff4df;color:#875000}.bad{background:#ffebeb;color:#a11e27}
-.empty{padding:25px;text-align:center;color:var(--muted)}footer{text-align:center;padding:16px;color:#718096;font-size:11px}
-@media(max-width:760px){main{padding:10px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.card .v{font-size:23px}.notegrid{grid-template-columns:1fr}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.brand h1{font-size:15px}.actions{width:100%}.actions .btn{flex:1}.toolbar{align-items:stretch}.toolbar>div{width:100%}.tabs .tab{font-size:12px;padding:9px 10px}}
-@media print{header,.toolbar,.tabs,.actions,.no-print,footer{display:none!important}body{background:white}main{max-width:none;padding:0}.panel,.card{box-shadow:none;break-inside:avoid}.cards{grid-template-columns:repeat(4,1fr)}.tablewrap{overflow:visible}table{min-width:0;font-size:9px}th,td{padding:5px 3px;white-space:normal}.tabsection.hidden{display:none!important}}
-
-/* सरल मोबाइल स्टॉक कार्ड */
-.mobile-stock-cards{display:none;padding:10px;gap:10px}
-.stock-mobile-card{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}
-.stock-mobile-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.stock-mobile-name{font-size:15px;font-weight:850}
-.stock-mobile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.stock-mobile-metric{background:#f4f7fa;border-radius:9px;padding:9px}
-.stock-mobile-metric span{display:block;font-size:11px;color:var(--muted);margin-bottom:3px}
-.stock-mobile-metric b{font-size:20px}
-.stock-mobile-metric.due{background:#fff3dc;color:#854900}
-.field-help{display:block;color:#68798b;font-size:11px;line-height:1.4;margin-top:5px}
-@media(max-width:760px){.desktop-stock-table{display:none}.mobile-stock-cards{display:grid}.panelhead{padding:12px}.panelhead h2{font-size:15px}.panelhead p{line-height:1.45}.formgrid{grid-template-columns:1fr 1fr}.dialog{padding:14px}.section{padding:10px}.section h3{font-size:13px}.dialogfoot .btn{flex:1;padding:12px}.card .v{font-size:25px}.actions .btn{font-size:12px;padding:10px 7px}}
-
+*{box-sizing:border-box}body{margin:0;background:#f3f6f9;color:#172b3a;font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif}.top{background:#123b5d;color:white;padding:18px 16px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}.top h1{font-size:20px;margin:3px 0}.eyebrow{font-size:11px;opacity:.8}.pill{font-size:11px;background:#ffffff20;border:1px solid #ffffff55;padding:6px 9px;border-radius:20px;white-space:nowrap}.tabs{display:flex;overflow:auto;background:#fff;position:sticky;top:0;z-index:3;box-shadow:0 2px 8px #10203012}.tabs button{border:0;background:none;padding:13px 14px;white-space:nowrap;color:#536575;font-weight:650}.tabs button.active{color:#123b5d;border-bottom:3px solid #1672ad}main{max-width:760px;margin:auto;padding:16px 13px 28px}.page{display:none}.page.active{display:block}h2{font-size:20px;margin:5px 0}h3{font-size:16px;margin:20px 0 10px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.section-head p,.help{font-size:12px;color:#667887;margin:4px 0 12px}.small{border:1px solid #cbd7df;background:#fff;border-radius:9px;padding:8px 12px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0 20px}.metric{border-radius:13px;padding:14px;min-height:91px;display:flex;flex-direction:column;justify-content:space-between}.metric span{font-size:12px}.metric b{font-size:27px}.blue{background:#d9eaf7}.green{background:#e2f0d9}.yellow{background:#fff2cc}.orange{background:#fce4d6}.type-list{display:grid;gap:8px}.type-row{display:grid;grid-template-columns:74px 1fr 1fr;gap:8px;align-items:center;border-radius:10px;padding:11px;font-size:13px}.type-row b{display:block;font-size:17px}.type-row small{color:#536575}.panel{background:white;padding:15px;border-radius:14px;box-shadow:0 2px 10px #122b3a0c;margin:12px 0}label{display:block;font-size:13px;font-weight:650;margin:10px 0;color:#334b5b}input,select{display:block;width:100%;margin-top:6px;border:1px solid #cbd7df;border-radius:9px;padding:12px;font:inherit;background:#fff;color:#172b3a;min-height:44px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.calc{background:#eef5f9;padding:12px;border-radius:9px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;margin:12px 0}.primary,.secondary{width:100%;border:0;border-radius:10px;padding:13px;font-weight:750;font-size:15px;margin-top:10px}.primary{background:#145b89;color:white}.secondary{background:#e5edf3;color:#123b5d}.records{display:grid;gap:8px}.record{background:#fff;border:1px solid #e1e8ed;border-radius:10px;padding:11px 12px;font-size:13px}.record strong{font-size:14px}.record .muted{color:#667887;font-size:11px;margin-top:4px}.note{background:#eaf2f7;padding:13px;border-radius:10px;font-size:13px;line-height:1.5;margin-top:18px}footer{text-align:center;color:#80909b;font-size:11px;padding:20px}ol{padding-left:20px;font-size:13px;line-height:1.7}@media(min-width:600px){.cards{grid-template-columns:repeat(4,1fr)}main{padding-top:22px}}
 </style>
+<title>HP Gas हिसाब मैनेजर 2.0</title>
 </head>
 <body>
-<header><div class="head">
- <div class="brand"><h1 id="agencyTitle">माँ अगवानी एच० पी० गैस ग्रामीण वितरक</h1><p id="agencyAddress">रानीपुर रजमों, आज़मगढ़ (उ०प्र०) · HP Gas हिसाब मैनेजर</p></div>
- <div class="actions">
-  <button class="btn gold" onclick="openStaff()">＋ नया हॉकर</button>
-  <button class="btn primary" onclick="openStock()">＋ स्टॉक एंट्री</button>
-  <button class="btn dark" onclick="printReport()">प्रिंट A4</button>
-  <button class="btn dark" onclick="exportBackup()">बैकअप लें</button>
-  <button class="btn dark" onclick="document.getElementById('importFile').click()">बैकअप खोलें</button>
-  <input id="importFile" type="file" accept=".json,application/json" class="hidden" onchange="importBackup(event)">
- </div>
-</div></header>
+<header class="top"><div><div class="eyebrow">एजेंसी स्टॉक एवं बकाया</div><h1>HP Gas हिसाब मैनेजर 2.0</h1></div><span id="syncBadge" class="pill">लोकल डेटा</span></header>
+<nav class="tabs">
+<button data-tab="dashboard" class="active">डैशबोर्ड</button><button data-tab="stock">दैनिक स्टॉक</button><button data-tab="market">मार्केट</button><button data-tab="staff">स्टाफ</button><button data-tab="cashbook">जमा-खर्च</button><button data-tab="settings">सेटिंग</button>
+</nav>
 <main>
- <div class="toolbar">
-  <div><label for="datePick">हिसाब की दिनांक</label><input type="date" id="datePick" onchange="changeDate(this.value)"></div>
-  <div class="actions"><button class="btn small" onclick="editAgency()">एजेंसी विवरण</button><button class="btn small" onclick="printReport()">रिपोर्ट प्रिंट</button><button class="btn small" onclick="exportCSV()">CSV / Excel</button></div>
- </div>
- <div class="cards">
-  <div class="card"><div class="k">क्लोजिंग भरा स्टॉक</div><div class="v" id="kFilled">0</div><div class="sub">गोडाउन में भरे सिलेंडर</div></div>
-  <div class="card"><div class="k">क्लोजिंग खाली स्टॉक</div><div class="v" id="kEmpty">0</div><div class="sub">गोडाउन में खाली सिलेंडर</div></div>
-  <div class="card"><div class="k">बकाया खाली सिलेंडर</div><div class="v" id="kDue">0</div><div class="sub">बाजार / पार्टी के पास</div></div>
-  <div class="card"><div class="k">कुल होल्डिंग</div><div class="v" id="kTotal">0</div><div class="sub">भरा + खाली + डिफेक्टिव + मार्केट बकाया</div></div>
- </div>
- <nav class="tabs no-print">
-  <button class="tab active" id="tab-stock" onclick="showTab('stock')">दैनिक स्टॉक</button>
-  <button class="tab" id="tab-staff" onclick="showTab('staff')">हॉकर बकाया खाता</button>
-  <button class="tab" id="tab-audit" onclick="showTab('audit')">कोटा ऑडिट</button>
- </nav>
- <section id="view-stock" class="tabsection">
-  <div class="panel">
-   <div class="panelhead"><div><h2>दैनिक सिलेंडर स्टॉक रजिस्टर</h2><p>14.2 KG घरेलू · 19 KG कमर्शियल · 10 KG कंपोजिट · 5 KG FTL</p></div><span class="sub">क्लोजिंग स्वतः गणना</span></div>
-   <div id="mobileStockCards" class="mobile-stock-cards"></div><div class="tablewrap desktop-stock-table"><table><thead><tr>
-    <th>सिलेंडर प्रकार</th><th class="blue">ओपनिंग भरा</th><th class="blue">प्लांट आवक (+)</th><th class="blue">बिक्री / इश्यू (-)</th><th class="green">क्लोजिंग भरा</th>
-    <th>ओपनिंग खाली</th><th>खाली प्राप्त (+)</th><th>प्लांट भेजा (-)</th><th class="sky">क्लोजिंग खाली</th><th>डिफेक्टिव</th><th class="amber">बकाया खाली सिलेंडर</th><th class="total">कुल होल्डिंग</th><th class="no-print">एडिट</th>
-   </tr></thead><tbody id="stockRows"></tbody><tfoot id="stockFoot"></tfoot></table></div>
-  </div>
-  <div class="notegrid">
-   <div class="note"><b>भरा स्टॉक</b>क्लोजिंग भरा = ओपनिंग भरा + प्लांट आवक − बिक्री/इश्यू</div>
-   <div class="note"><b>खाली स्टॉक</b>क्लोजिंग खाली = ओपनिंग खाली + खाली प्राप्त − प्लांट भेजा</div>
-   <div class="note"><b>कुल होल्डिंग</b>क्लोजिंग भरा + क्लोजिंग खाली + डिफेक्टिव + बकाया खाली सिलेंडर। हॉकर बकाया को मार्केट बकाया में दोबारा न जोड़ें।</div>
-  </div>
- </section>
- <section id="view-staff" class="tabsection hidden">
-  <div class="panel"><div class="panelhead"><div><h2>हॉकर / डिलीवरीमैन बकाया खाता</h2><p>आज का वितरण, खाली वापसी, अनसोल्ड भरा और पुराना खाली बकाया</p></div><button class="btn gold" onclick="openStaff()">＋ नया हॉकर जोड़ें</button></div>
-   <div class="tablewrap"><table style="min-width:900px"><thead><tr><th>हॉकर / स्टाफ</th><th>सिलेंडर प्रकार</th><th>सुबह दिया भरा</th><th>शाम जमा खाली</th><th>अनसोल्ड भरा वापस</th><th>आज नया बकाया</th><th>पुराना बकाया</th><th>पुराना जमा</th><th>कुल शेष बकाया</th><th class="no-print">एक्शन</th></tr></thead><tbody id="staffRows"></tbody><tfoot id="staffFoot"></tfoot></table></div>
-  </div>
-  <p class="note">हॉकर का कुल शेष बकाया = पुराना बकाया − आज पुराना जमा + आज नया बकाया। आज का नया बकाया = सुबह दिया भरा − अनसोल्ड भरा वापस − शाम जमा खाली।</p>
- </section>
- <section id="view-audit" class="tabsection hidden">
-  <div class="panel"><div class="panelhead"><div><h2>एजेंसी कोटा मिलान / ऑडिट</h2><p>कुल भौतिक होल्डिंग और स्वीकृत कोटे का अंतर</p></div></div>
-   <div style="padding:15px;max-width:650px">
-    <div class="formgrid">
-     <div class="field"><label>स्वीकृत कुल कोटा</label><input type="number" min="0" id="quota" onchange="saveQuota(this.value)"></div>
-     <div class="field"><label>भरा स्टॉक</label><input id="aFilled" readonly></div><div class="field"><label>खाली स्टॉक</label><input id="aEmpty" readonly></div>
-     <div class="field"><label>डिफेक्टिव</label><input id="aDef" readonly></div><div class="field"><label>बकाया खाली सिलेंडर</label><input id="aDue" readonly></div><div class="field"><label>कुल गिनती</label><input id="aTotal" readonly></div>
-    </div><div id="auditStatus" class="status"></div>
-    <p class="sub">ध्यान दें: कोटा मिलान तभी सही होगा जब स्वीकृत कोटे में शामिल सभी सिलेंडर श्रेणियाँ और बकाया की गणना एक ही आधार पर हो।</p>
-   </div>
-  </div>
- </section>
+<section id="dashboard" class="page active">
+<div class="section-head"><div><h2>आज का सारांश</h2><p id="todayLabel"></p></div><button class="small" id="refreshBtn">रिफ्रेश</button></div>
+<div class="cards">
+<div class="metric blue"><span>कुल भरा स्टॉक</span><b id="totalFilled">0</b></div>
+<div class="metric green"><span>कुल खाली स्टॉक</span><b id="totalEmpty">0</b></div>
+<div class="metric yellow"><span>मार्केट सिलेंडर बकाया</span><b id="marketDue">0</b></div>
+<div class="metric orange"><span>स्टाफ सिलेंडर बकाया</span><b id="staffDue">0</b></div><div class="metric blue"><span>आज का शुद्ध जमा-खर्च</span><b id="cashNet">₹0</b></div>
+</div>
+<h3>सिलेंडर के अनुसार स्टॉक</h3><div id="stockSummary" class="type-list"></div>
+<h3>कुल सिलेंडर मिलान</h3><div id="reconcileSummary" class="type-list"></div>
+<div class="note"><b>मिलान का तरीका:</b> गोदाम का भरा + खाली स्टॉक और मार्केट/स्टाफ के पास बकाया सिलेंडर जोड़कर लक्ष्य से तुलना होगी। इससे कुल कमी या अधिकता दिखेगी।</div>
+<div class="note"><b>दैनिक क्लोजिंग:</b> हर दिन की एंट्री के बाद भरे और खाली स्टॉक की वास्तविक गिनती से तुलना करें।</div>
+</section>
+
+<section id="stock" class="page">
+<div class="section-head"><div><h2>दैनिक स्टॉक एंट्री</h2><p>हर दिन और हर सिलेंडर प्रकार के लिए एंट्री करें।</p></div></div>
+<form id="stockForm" class="panel">
+<label>तारीख<input type="date" id="stockDate" required></label>
+<label>सिलेंडर प्रकार<select id="stockType"></select></label>
+<div class="grid2">
+<label>शुरुआती भरे<input type="number" min="0" id="openFilled" value="0" required></label>
+<label>प्लांट से भरे आए<input type="number" min="0" id="plantFilled" value="0" required></label>
+<label>भरे जारी किए<input type="number" min="0" id="filledIssued" value="0" required></label>
+<label>शुरुआती खाली<input type="number" min="0" id="openEmpty" value="0" required></label>
+<label>खाली वापस आए<input type="number" min="0" id="emptyReturned" value="0" required></label>
+<label>खाली प्लांट भेजे<input type="number" min="0" id="emptySent" value="0" required></label>
+</div>
+<div class="calc"><span>अंतिम भरे: <b id="previewFilled">0</b></span><span>अंतिम खाली: <b id="previewEmpty">0</b></span></div>
+<label>नोट<input id="stockNote" placeholder="वैकल्पिक"></label>
+<button class="primary">स्टॉक सेव करें</button>
+</form><h3>हाल की स्टॉक एंट्री</h3><div id="stockRows" class="records"></div>
+</section>
+
+<section id="market" class="page">
+<h2>मार्केट / पार्टी बकाया</h2>
+<form id="marketForm" class="panel">
+<label>तारीख<input type="date" id="marketDate" required></label>
+<label>पार्टी / ग्राहक का नाम<input id="partyName" required placeholder="पार्टी का नाम"></label>
+<label>मोबाइल / पहचान<input id="partyPhone" placeholder="वैकल्पिक"></label>
+<label>सिलेंडर प्रकार<select id="marketType"></select></label>
+<div class="grid2">
+<label>शुरुआती खाली बकाया<input type="number" min="0" id="marketOpening" value="0"></label>
+<label>आज भरे दिए<input type="number" min="0" id="marketGiven" value="0"></label>
+<label>आज खाली वापस मिले<input type="number" min="0" id="marketEmptyBack" value="0"></label>
+<label>भरे वापस मिले<input type="number" min="0" id="marketFilledBack" value="0"></label>
+</div>
+<div class="calc"><span>अंतिम सिलेंडर बकाया: <b id="marketPreview">0</b></span></div>
+<label>पैसों का बकाया (₹)<input type="number" min="0" step="0.01" id="partyMoney" value="0"></label>
+<button class="primary">पार्टी एंट्री सेव करें</button>
+</form><h3>पार्टी का हिसाब</h3><div id="marketRows" class="records"></div>
+</section>
+
+<section id="staff" class="page">
+<h2>डिलीवरीमैन हिसाब</h2>
+<form id="staffForm" class="panel">
+<label>तारीख<input type="date" id="staffDate" required></label>
+<label>डिलीवरीमैन का नाम<input id="staffName" required placeholder="नाम"></label>
+<label>सिलेंडर प्रकार<select id="staffType"></select></label>
+<div class="grid2">
+<label>शुरुआती बकाया<input type="number" min="0" id="staffOpening" value="0"></label>
+<label>आज दिए गए<input type="number" min="0" id="staffGiven" value="0"></label>
+<label>आज वापस किए<input type="number" min="0" id="staffReturned" value="0"></label>
+<label>कैश जमा (₹)<input type="number" min="0" step="0.01" id="staffCash" value="0"></label>
+</div>
+<div class="calc"><span>अंतिम सिलेंडर बकाया: <b id="staffPreview">0</b></span></div>
+<button class="primary">स्टाफ एंट्री सेव करें</button>
+</form><h3>स्टाफ का हिसाब</h3><div id="staffRows" class="records"></div>
+</section>
+
+
+<section id="cashbook" class="page">
+<h2>दैनिक जमा एवं खर्च</h2>
+<form id="cashForm" class="panel">
+<label>तारीख<input type="date" id="cashDate" required></label>
+<label>प्रकार<select id="cashKind"><option value="income">जमा / आय</option><option value="expense">खर्च</option></select></label>
+<label>विवरण / मद<input id="cashTitle" required placeholder="जैसे नकद जमा, डीजल, वेतन"></label>
+<label>राशि (₹)<input type="number" id="cashAmount" min="0.01" step="0.01" required></label>
+<label>नोट<input id="cashNote" placeholder="वैकल्पिक"></label>
+<button class="primary">जमा / खर्च सेव करें</button>
+</form><div class="cards"><div class="metric green"><span>कुल जमा</span><b id="cashIncome">₹0</b></div><div class="metric orange"><span>कुल खर्च</span><b id="cashExpense">₹0</b></div></div><h3>लेन-देन सूची</h3><div id="cashRows" class="records"></div>
+</section>
+
+<section id="settings" class="page">
+<h2>सेटिंग और बैकअप</h2>
+<div class="panel">
+<h3>कुल सिलेंडर का लक्ष्य तय करें</h3>
+<p class="help">हर प्रकार के आपके कुल उपलब्ध/रजिस्टर सिलेंडर की संख्या भरें। ऐप गोदाम + मार्केट बकाया + स्टाफ बकाया से मिलान करेगा।</p>
+<div class="grid2">
+<label>14 KG लक्ष्य<input type="number" min="0" step="1" id="target14" placeholder="कुल संख्या"></label>
+<label>19 KG लक्ष्य<input type="number" min="0" step="1" id="target19" placeholder="कुल संख्या"></label>
+<label>10 KG लक्ष्य<input type="number" min="0" step="1" id="target10" placeholder="कुल संख्या"></label>
+<label>5 KG लक्ष्य<input type="number" min="0" step="1" id="target5" placeholder="कुल संख्या"></label>
+</div>
+<button class="primary" type="button" id="saveTargets">लक्ष्य सेव करें</button>
+<p id="targetMessage" class="help">लक्ष्य सेट करने के बाद डैशबोर्ड पर कमी/अधिकता दिखेगी।</p>
+</div>
+<h2>Google Sheets सिंक</h2>
+<div class="panel">
+<h3>फोन का डेटा बैकअप</h3>
+<p>डेटा की कॉपी फोन में डाउनलोड करें। नए फोन या डेटा मिटने पर JSON बैकअप वापस लोड कर सकते हैं।</p>
+<div class="grid2"><button class="secondary" type="button" id="exportBackup">बैकअप डाउनलोड</button><button class="secondary" type="button" id="importBackupBtn">बैकअप वापस लाएँ</button></div>
+<input type="file" id="importBackupFile" accept="application/json,.json" hidden>
+<p id="backupMessage" class="help">बैकअप फाइल को सुरक्षित जगह रखें।</p>
+</div>
+<div class="panel">
+<p>अपनी Google Apps Script Web App URL यहाँ डालें। डेटा पहले इस फोन में सेव होगा; सिंक चालू होने पर Google Sheet में भेजा जाएगा।</p>
+<label>Web App URL<input id="scriptUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec"></label>
+<label>सिंक सुरक्षा कोड<input id="syncToken" type="password" autocomplete="off" placeholder="Apps Script से मिला निजी कोड"></label>
+<button class="primary" id="saveSettings">URL सेव करें</button>
+<button class="secondary" id="syncNow">अभी सिंक करें</button>
+<p id="syncMessage" class="help">अभी लोकल सेविंग चालू है।</p>
+</div>
+<div class="panel">
+<h3>Google Sheet सेटअप</h3>
+<ol><li>नई Google Sheet बनाएं।</li><li>Extensions → Apps Script खोलें।</li><li>इस पैकेज की <b>Code.gs</b> फाइल का कोड वहाँ पेस्ट करें और सेव करें।</li><li>Deploy → New deployment → Web app चुनें। Execute as: Me और access: Anyone रखें (अपने Google खाते की सुरक्षा नीति के अनुसार)।</li><li>Deploy से मिली URL यहाँ पेस्ट करें।</li></ol>
+<p class="help">वेब ऐप URL सार्वजनिक रूप से खुलने योग्य endpoint है। इसे निजी रखें। एजेंसी का डेटा संवेदनशील हो तो Google खाते की access policy और Sheet sharing सीमित रखें।</p>
+</div>
+</section>
 </main>
-<footer>माँ अगवानी एच० पी० गैस ग्रामीण वितरक · यह ऐप इस मोबाइल/ब्राउज़र में डेटा सेव करता है। नियमित JSON बैकअप लेते रहें।</footer>
-
-<div id="stockModal" class="modal hidden"><div class="dialog">
- <h2>दैनिक स्टॉक एंट्री</h2><p class="hint">दिनांक और सिलेंडर प्रकार चुनकर सभी संख्याएँ भरें।</p>
- <form id="stockForm" onsubmit="saveStock(event)">
-  <div class="formgrid"><div class="field"><label>दिनांक</label><input type="date" id="sDate" required></div><div class="field" style="grid-column:span 2"><label>सिलेंडर प्रकार</label><select id="sType" onchange="loadStockForm()"></select></div></div>
-  <div class="section bluebg"><h3>① भरा सिलेंडर</h3><div class="formgrid"><div class="field"><label>ओपनिंग भरा</label><input type="number" min="0" inputmode="numeric" id="sOF" required></div><div class="field"><label>प्लांट आवक (+)</label><input type="number" min="0" inputmode="numeric" id="sRF" required></div><div class="field"><label>बिक्री / इश्यू (-)</label><input type="number" min="0" inputmode="numeric" id="sSF" required></div></div><div class="calc">क्लोजिंग भरा: <span id="sCF">0</span></div></div>
-  <div class="section skybg"><h3>② खाली सिलेंडर</h3><div class="formgrid"><div class="field"><label>ओपनिंग खाली</label><input type="number" min="0" inputmode="numeric" id="sOE" required></div><div class="field"><label>खाली प्राप्त (+)</label><input type="number" min="0" inputmode="numeric" id="sRE" required></div><div class="field"><label>प्लांट भेजा (-)</label><input type="number" min="0" inputmode="numeric" id="sPE" required></div></div><div class="calc">क्लोजिंग खाली: <span id="sCE">0</span></div></div>
-  <div class="section goldbg"><h3>③ खराब और बकाया सिलेंडर</h3><div class="formgrid"><div class="field"><label>डिफेक्टिव / लीकेज</label><input type="number" min="0" inputmode="numeric" id="sDEF" required></div><div class="field"><label>बकाया खाली सिलेंडर</label><input type="number" min="0" inputmode="numeric" id="sDUE" required><small class="field-help">आज बाजार / पार्टी के पास एजेंसी के जितने खाली सिलेंडर बाकी हैं</small></div></div><div class="calc">कुल होल्डिंग: <span id="sHOLD">0</span></div></div>
-  <div id="stockError" class="status bad hidden"></div><div class="dialogfoot"><button type="button" class="btn" onclick="closeModal('stockModal')">रद्द</button><button class="btn primary">सुरक्षित करें</button></div>
- </form>
-</div></div>
-
-<div id="staffModal" class="modal hidden"><div class="dialog">
- <h2 id="staffModalTitle">हॉकर / डिलीवरीमैन</h2><p class="hint">स्टाफ का नाम और आज का सिलेंडर हिसाब भरें।</p>
- <form id="staffForm" onsubmit="saveStaff(event)">
-  <input type="hidden" id="hId">
-  <div class="formgrid"><div class="field"><label>नाम / रूट</label><input id="hName" required></div><div class="field"><label>मोबाइल (वैकल्पिक)</label><input id="hPhone" inputmode="numeric"></div><div class="field"><label>सिलेंडर प्रकार</label><select id="hType"></select></div>
-  <div class="field"><label>सुबह दिया भरा</label><input type="number" min="0" id="hIssued" required></div><div class="field"><label>शाम जमा खाली</label><input type="number" min="0" id="hReturned" required></div><div class="field"><label>अनसोल्ड भरा वापस</label><input type="number" min="0" id="hUnsold" required></div>
-  <div class="field"><label>पुराना बकाया</label><input type="number" min="0" id="hPrev" required></div><div class="field"><label>आज पुराना बकाया जमा</label><input type="number" min="0" id="hRecovered" required></div></div>
-  <div id="staffCalc" class="status ok">आज नया बकाया: 0 · कुल शेष: 0</div><div id="staffError" class="status bad hidden"></div>
-  <div class="dialogfoot"><button type="button" class="btn" onclick="closeModal('staffModal')">रद्द</button><button class="btn gold">सुरक्षित करें</button></div>
- </form>
-</div></div>
-
+<footer>HP Gas हिसाब मैनेजर · एक फोन के उपयोग के लिए</footer>
 <script>
-const TYPES=[
- {id:'14.2 kg Domestic',name:'14.2 KG घरेलू',color:'#d62835'},
- {id:'19 kg Commercial',name:'19 KG कमर्शियल',color:'#2563eb'},
- {id:'10 kg Composite',name:'10 KG कंपोजिट',color:'#d97706'},
- {id:'5 kg Domestic/FTL',name:'5 KG छोटू / FTL',color:'#059669'}
-];
-const SAMPLE={
- '14.2 kg Domestic':{opFilled:120,receiptFilled:306,saleFilled:280,opEmpty:150,recEmpty:260,toPlantEmpty:306,defective:2,pendingEmpty:20},
- '19 kg Commercial':{opFilled:25,receiptFilled:50,saleFilled:35,opEmpty:30,recEmpty:30,toPlantEmpty:50,defective:0,pendingEmpty:5},
- '10 kg Composite':{opFilled:15,receiptFilled:20,saleFilled:12,opEmpty:10,recEmpty:10,toPlantEmpty:20,defective:0,pendingEmpty:2},
- '5 kg Domestic/FTL':{opFilled:10,receiptFilled:0,saleFilled:4,opEmpty:8,recEmpty:4,toPlantEmpty:0,defective:0,pendingEmpty:0}
-};
-const SAMPLE_STAFF=[
- {id:'h1',name:'Ramesh Yadav (Ranipur Route 1)',phone:'',type:TYPES[0].id},
- {id:'h2',name:'Mukesh Sharma (Rajmo Bazaar Route)',phone:'',type:TYPES[0].id},
- {id:'h3',name:'Sunil Verma (Commercial Route)',phone:'',type:TYPES[1].id},
- {id:'h4',name:'Ajay Chauhan (Composite Domestic)',phone:'',type:TYPES[2].id}
-];
-const KEY='hp_gas_hisab_v2';
-const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
-const blankStock=()=>Object.fromEntries(TYPES.map(t=>[t.id,{opFilled:0,receiptFilled:0,saleFilled:0,opEmpty:0,recEmpty:0,toPlantEmpty:0,defective:0,pendingEmpty:0}]));
-let state, selected=today(), editingType=TYPES[0].id, editingStaff=null;
-function clone(x){return JSON.parse(JSON.stringify(x))}
-function loadState(){
- try{state=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){state=null}
- if(!state||!state.days) {
-  state={agency:'माँ अगवानी एच० पी० गैस ग्रामीण वितरक',address:'रानीपुर रजमों, आज़मगढ़ (उ०प्र०)',quota:370,staff:clone(SAMPLE_STAFF),days:{}};
-  state.days[selected]={stock:clone(SAMPLE),hawkers:{
-   h1:{issued:60,returned:54,unsold:2,prevDue:8,recovered:0},
-   h2:{issued:80,returned:75,unsold:0,prevDue:5,recovered:0},
-   h3:{issued:30,returned:26,unsold:1,prevDue:2,recovered:0},
-   h4:{issued:12,returned:10,unsold:0,prevDue:1,recovered:0}
-  }};
- }
- state.staff=state.staff||[];state.days=state.days||{};
- if(!state.days[selected]) state.days[selected]={stock:blankStock(),hawkers:{}};
- save();
-}
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}
-function ensureDay(date){
- if(state.days[date])return;
- const prior=Object.keys(state.days).filter(d=>d<date).sort().pop();
- const stock=blankStock(),hawkers={};
- if(prior){
-  const old=state.days[prior];
-  TYPES.forEach(t=>{const x=old.stock?.[t.id]||{};stock[t.id]={opFilled:Math.max(0,num(x.opFilled)+num(x.receiptFilled)-num(x.saleFilled)),receiptFilled:0,saleFilled:0,opEmpty:Math.max(0,num(x.opEmpty)+num(x.recEmpty)-num(x.toPlantEmpty)),recEmpty:0,toPlantEmpty:0,defective:num(x.defective),pendingEmpty:num(x.pendingEmpty)}});
-  state.staff.forEach(s=>{const h=old.hawkers?.[s.id]||{};hawkers[s.id]={issued:0,returned:0,unsold:0,prevDue:remainingDue(h),recovered:0}});
- }else state.staff.forEach(s=>hawkers[s.id]={issued:0,returned:0,unsold:0,prevDue:0,recovered:0});
- state.days[date]={stock,hawkers};save();
-}
-function num(v){const n=Number(v);return Number.isFinite(n)?n:0}
-function stockTotals(x){const cf=num(x.opFilled)+num(x.receiptFilled)-num(x.saleFilled),ce=num(x.opEmpty)+num(x.recEmpty)-num(x.toPlantEmpty);return {cf,ce,holding:cf+ce+num(x.defective)+num(x.pendingEmpty)}}
-function hawkerCalc(h){const todayDue=num(h.issued)-num(h.unsold)-num(h.returned);return {todayDue,remaining:num(h.prevDue)-num(h.recovered)+todayDue}}
-function remainingDue(h){return Math.max(0,hawkerCalc(h).remaining)}
-function day(){return state.days[selected]}
-function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function init(){
- loadState();document.getElementById('datePick').value=selected;
- document.getElementById('agencyTitle').textContent=state.agency;document.getElementById('agencyAddress').textContent=state.address+' · HP Gas हिसाब मैनेजर';
- document.getElementById('sType').innerHTML=TYPES.map(t=>`<option value="${safe(t.id)}">${safe(t.name)}</option>`).join('');
- document.getElementById('hType').innerHTML=TYPES.map(t=>`<option value="${safe(t.id)}">${safe(t.name)}</option>`).join('');
- ['sOF','sRF','sSF','sOE','sRE','sPE','sDEF','sDUE'].forEach(id=>document.getElementById(id).addEventListener('input',calcStockForm));
- ['hIssued','hReturned','hUnsold','hPrev','hRecovered'].forEach(id=>document.getElementById(id).addEventListener('input',calcStaffForm));
- render();
-}
+
+const $=id=>document.getElementById(id);
+const TYPES=[{id:"14 kg",label:"14 KG घरेलू",color:"#D9EAF7"},{id:"19 kg",label:"19 KG कमर्शियल",color:"#E2F0D9"},{id:"10 kg",label:"10 KG कमर्शियल",color:"#FFF2CC"},{id:"5 kg",label:"5 KG कमर्शियल",color:"#FCE4D6"}];
+const key="hpGasManagerV1";
+let state=JSON.parse(localStorage.getItem(key)||'{"stock":[],"market":[],"staff":[],"cashbook":[]}');
+state.cashbook=Array.isArray(state.cashbook)?state.cashbook:[];
+let settings=JSON.parse(localStorage.getItem(key+"_settings")||'{"url":"","token":""}');
+let targetTotals=JSON.parse(localStorage.getItem(key+"_targets")||'{}');
+["14 kg","19 kg","10 kg","5 kg"].forEach((t,i)=>{const el=$("target"+["14","19","10","5"][i]);if(el)el.value=targetTotals[t]??"";});
+function localDate(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`;}
+const today=localDate();
+["stockDate","marketDate","staffDate","cashDate"].forEach(id=>$(id).value=today);
+["stockType","marketType","staffType"].forEach(id=>$(id).innerHTML=TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join(""));
+$("scriptUrl").value=settings.url||"";$("syncToken").value=settings.token||"";
+function save(){localStorage.setItem(key,JSON.stringify(state));render();$("syncBadge").textContent="फोन में सेव";$("syncBadge").style.background="#ffffff25";}
+function n(id){return Number($(id).value||0)}
+function typeLabel(id){return TYPES.find(t=>t.id===id)?.label||id}
+function addRecord(arr,obj){state[arr].push({...obj,id:crypto.randomUUID(),savedAt:new Date().toISOString()});save()}
+function sum(arr,fn){return arr.reduce((a,x)=>a+fn(x),0)}
+function latestBalances(arr, keyFn){const map=new Map();arr.forEach(x=>{const k=keyFn(x);const old=map.get(k);if(!old||(x.date||"")>=(old.date||""))map.set(k,x)});return [...map.values()]}
+function latestStock(type,field){let rows=state.stock.filter(x=>x.type===type).sort((a,b)=>(a.date||"").localeCompare(b.date||""));return rows.length?rows[rows.length-1][field]:0}
+// चुनी हुई तारीख से पहले की आखिरी क्लोजिंग अपने-आप अगले दिन की ओपनिंग बनेगी।
+function priorRecord(arr, date, match){return arr.filter(x=>(x.date||"")<date&&match(x)).sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0]||null;}
+function carryStockOpening(){const d=$("stockDate").value,t=$("stockType").value;if(!d)return;const p=priorRecord(state.stock,d,x=>x.type===t);$("openFilled").value=p?p.closingFilled:0;$("openEmpty").value=p?p.closingEmpty:0;previewStock();}
+function carryMarketOpening(){const d=$("marketDate").value,t=$("marketType").value,name=$("partyName").value.trim().toLowerCase();if(!d||!name)return;const p=priorRecord(state.market,d,x=>x.type===t&&(x.name||"").trim().toLowerCase()===name);$("marketOpening").value=p?p.closingDue:0;previewMarket();}
+function carryStaffOpening(){const d=$("staffDate").value,t=$("staffType").value,name=$("staffName").value.trim().toLowerCase();if(!d||!name)return;const p=priorRecord(state.staff,d,x=>x.type===t&&(x.name||"").trim().toLowerCase()===name);$("staffOpening").value=p?p.closingDue:0;previewStaff();}
+$("stockDate").addEventListener("change",carryStockOpening);$("stockType").addEventListener("change",carryStockOpening);
+$("marketDate").addEventListener("change",carryMarketOpening);$("marketType").addEventListener("change",carryMarketOpening);$("partyName").addEventListener("change",carryMarketOpening);
+$("staffDate").addEventListener("change",carryStaffOpening);$("staffType").addEventListener("change",carryStaffOpening);$("staffName").addEventListener("change",carryStaffOpening);
 function render(){
- renderStock();renderStaff();renderAudit();
+ let filled=0,empty=0,marketTotal=0,staffTotal=0;
+ const marketBalances=latestBalances(state.market,x=>x.name+"|"+x.type);
+ const staffBalances=latestBalances(state.staff,x=>x.name+"|"+x.type);
+ marketTotal=sum(marketBalances,x=>Number(x.closingDue||0));
+ staffTotal=sum(staffBalances,x=>Number(x.closingDue||0));
+ $("stockSummary").innerHTML=TYPES.map(t=>{let f=latestStock(t.id,"closingFilled"),e=latestStock(t.id,"closingEmpty");filled+=f;empty+=e;
+  return `<div class="type-row" style="background:${t.color}"><b>${t.id}</b><span>भरे स्टॉक<b>${f}</b></span><span>खाली स्टॉक<b>${e}</b></span></div>`}).join("");
+ $("totalFilled").textContent=filled;$("totalEmpty").textContent=empty;
+ $("marketDue").textContent=marketTotal;$("staffDue").textContent=staffTotal;
+ let accountedAll=0,targetAll=0,targetsSet=0;
+ $("reconcileSummary").innerHTML=TYPES.map(t=>{
+  const f=latestStock(t.id,"closingFilled"),e=latestStock(t.id,"closingEmpty");
+  const m=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.closingDue||0));
+  const st=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.closingDue||0));
+  const actual=f+e+m+st;accountedAll+=actual;
+  const target=Number(targetTotals[t.id]||0);if(target>0){targetAll+=target;targetsSet++;}
+  const diff=target-actual;
+  const status=target<=0?'लक्ष्य सेट नहीं':diff>0?`कम ${diff} सिलेंडर`:diff<0?`ज्यादा ${Math.abs(diff)} सिलेंडर`:'पूरा मिलान';
+  const color=target<=0?'#edf2f6':diff>0?'#fce4d6':diff<0?'#fff2cc':'#e2f0d9';
+  return `<div class="type-row" style="background:${color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>लक्ष्य / कुल<b>${target||'—'}</b></span><span>हिसाब ${actual}<b>${status}</b></span></div>`;
+ }).join("");
+ if(targetsSet){const diff=targetAll-accountedAll;$("reconcileSummary").insertAdjacentHTML("beforeend",`<div class="calc"><span>कुल लक्ष्य: <b>${targetAll}</b></span><span>कुल हिसाब: <b>${accountedAll}</b></span><span>${diff>0?`कुल कमी: ${diff}`:diff<0?`कुल अधिक: ${Math.abs(diff)}`:'कुल मिलान सही'}</span></div>`)}
+ $("stockRows").innerHTML=state.stock.slice(-12).reverse().map(x=>`<div class="record"><strong>${x.date} · ${typeLabel(x.type)}</strong><div>भरा: ${x.closingFilled} | खाली: ${x.closingEmpty}</div><div class="muted">${esc(x.note||"")}</div></div>`).join("")||'<div class="record">अभी कोई एंट्री नहीं है।</div>';
+ $("marketRows").innerHTML=state.market.slice(-20).reverse().map(x=>`<div class="record"><strong>${esc(x.name)} · ${typeLabel(x.type)}</strong><div>सिलेंडर बकाया: <b>${x.closingDue}</b> | पैसे: ₹${x.moneyDue}</div><div class="muted">${x.date} · दिए ${x.given} · खाली वापस ${x.emptyBack}</div></div>`).join("")||'<div class="record">अभी कोई पार्टी एंट्री नहीं है।</div>';
+ $("staffRows").innerHTML=state.staff.slice(-20).reverse().map(x=>`<div class="record"><strong>${esc(x.name)} · ${typeLabel(x.type)}</strong><div>सिलेंडर बकाया: <b>${x.closingDue}</b> | कैश जमा ₹${x.cash}</div><div class="muted">${x.date} · दिए ${x.given} · वापस ${x.returned}</div></div>`).join("")||'<div class="record">अभी कोई स्टाफ एंट्री नहीं है।</div>';
+ const income=state.cashbook.filter(x=>x.kind==="income"),expense=state.cashbook.filter(x=>x.kind==="expense");const sumAmt=a=>a.reduce((s,x)=>s+Number(x.amount||0),0);$("cashIncome").textContent="₹"+sumAmt(income).toLocaleString("en-IN");$("cashExpense").textContent="₹"+sumAmt(expense).toLocaleString("en-IN");const todayCash=state.cashbook.filter(x=>x.date===today);$("cashNet").textContent="₹"+(sumAmt(todayCash.filter(x=>x.kind==="income"))-sumAmt(todayCash.filter(x=>x.kind==="expense"))).toLocaleString("en-IN");$("cashRows").innerHTML=state.cashbook.slice(-30).reverse().map(x=>`<div class="record"><strong>${esc(x.title)} · ${x.kind==="income"?"जमा":"खर्च"}</strong><div>₹${Number(x.amount).toLocaleString("en-IN")} · ${esc(x.date)}</div><div class="muted">${esc(x.note||"")}</div></div>`).join("")||'<div class="record">अभी कोई जमा-खर्च एंट्री नहीं है।</div>';
 }
-function renderStock(){
- const rows=document.getElementById('stockRows');rows.innerHTML='';let sums=Array(12).fill(0);
- TYPES.forEach(t=>{const x=day().stock[t.id]||blankStock()[t.id],v=stockTotals(x),vals=[x.opFilled,x.receiptFilled,x.saleFilled,v.cf,x.opEmpty,x.recEmpty,x.toPlantEmpty,v.ce,x.defective,x.pendingEmpty,v.holding];
-  const tr=document.createElement('tr');tr.innerHTML=`<td class="type"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${t.color};margin-right:6px"></span>${safe(t.name)}</td>
-  <td class="blue">${x.opFilled}</td><td class="blue">+${x.receiptFilled}</td><td class="blue redtxt">−${x.saleFilled}</td><td class="green">${v.cf}</td>
-  <td>${x.opEmpty}</td><td>+${x.recEmpty}</td><td class="redtxt">−${x.toPlantEmpty}</td><td class="sky">${v.ce}</td><td>${x.defective}</td><td class="amber">${x.pendingEmpty}</td><td class="total">${v.holding}</td><td class="no-print"><button class="btn small" onclick="openStock('${safe(t.id)}')">एडिट</button></td>`;
-  rows.appendChild(tr);vals.forEach((n,i)=>sums[i]+=num(n));
- });
- const mobile=document.getElementById('mobileStockCards');
- mobile.innerHTML=TYPES.map(t=>{const x=day().stock[t.id]||blankStock()[t.id],v=stockTotals(x);return `<article class="stock-mobile-card"><div class="stock-mobile-top"><div class="stock-mobile-name"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${t.color};margin-right:7px"></span>${safe(t.name)}</div><button class="btn primary small" onclick="openStock('${safe(t.id)}')">एंट्री / बदलें</button></div><div class="stock-mobile-grid"><div class="stock-mobile-metric"><span>क्लोजिंग भरा</span><b>${v.cf}</b></div><div class="stock-mobile-metric"><span>क्लोजिंग खाली</span><b>${v.ce}</b></div><div class="stock-mobile-metric due"><span>बकाया खाली सिलेंडर</span><b>${num(x.pendingEmpty)}</b></div><div class="stock-mobile-metric"><span>डिफेक्टिव</span><b>${num(x.defective)}</b></div></div><div class="sub" style="margin-top:8px">कुल होल्डिंग: <b>${v.holding}</b></div></article>`}).join('');
- document.getElementById('stockFoot').innerHTML=`<tr><th>कुल योग</th>${sums.slice(0,3).map(x=>`<th>${x}</th>`).join('')}<th>${sums[3]}</th><th>${sums[4]}</th><th>${sums[5]}</th><th>${sums[6]}</th><th>${sums[7]}</th><th>${sums[8]}</th><th>${sums[9]}</th><th>${sums[10]}</th><th class="no-print">—</th></tr>`;
- document.getElementById('kFilled').textContent=sums[3];document.getElementById('kEmpty').textContent=sums[7];document.getElementById('kDue').textContent=sums[9];document.getElementById('kTotal').textContent=sums[10];
-}
-function renderStaff(){
- const rows=document.getElementById('staffRows');rows.innerHTML='';let totals={issued:0,returned:0,unsold:0,today:0,prev:0,recovered:0,remaining:0};
- if(!state.staff.length){rows.innerHTML='<tr><td colspan="10" class="empty">अभी कोई हॉकर नहीं है। नया हॉकर जोड़ें।</td></tr>';document.getElementById('staffFoot').innerHTML='';return}
- state.staff.forEach(s=>{const h=day().hawkers[s.id]||{issued:0,returned:0,unsold:0,prevDue:0,recovered:0},c=hawkerCalc(h);const vals=[h.issued,h.returned,h.unsold,c.todayDue,h.prevDue,h.recovered,c.remaining];['issued','returned','unsold'].forEach((k,i)=>totals[k]+=num(vals[i]));totals.today+=c.todayDue;totals.prev+=num(h.prevDue);totals.recovered+=num(h.recovered);totals.remaining+=c.remaining;
- const tr=document.createElement('tr');tr.innerHTML=`<td style="text-align:left;font-weight:800">${safe(s.name)}<small style="display:block;color:#718096">${safe(s.phone||'')}</small></td><td>${safe(TYPES.find(t=>t.id===s.type)?.name||s.type)}</td><td>${h.issued||0}</td><td>${h.returned||0}</td><td>${h.unsold||0}</td><td class="amber">${c.todayDue}</td><td>${h.prevDue||0}</td><td>${h.recovered||0}</td><td class="redtxt">${c.remaining}</td><td class="no-print"><button class="btn small" onclick="openStaff('${safe(s.id)}')">एडिट</button> <button class="btn small" onclick="removeStaff('${safe(s.id)}')">हटाएँ</button></td>`;rows.appendChild(tr);
- });
- document.getElementById('staffFoot').innerHTML=`<tr><th colspan="2">कुल योग</th><th>${totals.issued}</th><th>${totals.returned}</th><th>${totals.unsold}</th><th>${totals.today}</th><th>${totals.prev}</th><th>${totals.recovered}</th><th>${totals.remaining}</th><th></th></tr>`;
-}
-function renderAudit(){
- let f=0,e=0,d=0,p=0;TYPES.forEach(t=>{const x=day().stock[t.id]||{};const v=stockTotals(x);f+=v.cf;e+=v.ce;d+=num(x.defective);p+=num(x.pendingEmpty)});
- const total=f+e+d+p,diff=total-num(state.quota);
- [['aFilled',f],['aEmpty',e],['aDef',d],['aDue',p],['aTotal',total]].forEach(([id,v])=>document.getElementById(id).value=v);
- document.getElementById('quota').value=state.quota;
- const el=document.getElementById('auditStatus');el.className='status '+(diff===0?'ok':diff<0?'bad':'warn');
- el.textContent=diff===0?`स्टॉक और स्वीकृत कोटा बराबर हैं (${total})।`:diff<0?`कोटे से ${Math.abs(diff)} सिलेंडर कम हैं। भौतिक गिनती और बकाया जाँचें।`:`कोटे से ${diff} सिलेंडर अधिक हैं। आवक/रिटर्न और गणना जाँचें।`;
-}
-function changeDate(v){if(!v)return;selected=v;ensureDay(v);document.getElementById('datePick').value=v;render()}
-function showTab(t){['stock','staff','audit'].forEach(x=>{document.getElementById('view-'+x).classList.toggle('hidden',x!==t);document.getElementById('tab-'+x).classList.toggle('active',x===t)})}
-function openModal(id){document.getElementById(id).classList.remove('hidden')}
-function closeModal(id){document.getElementById(id).classList.add('hidden')}
-function openStock(type=TYPES[0].id){editingType=type;document.getElementById('sDate').value=selected;document.getElementById('sType').value=type;loadStockForm();openModal('stockModal')}
-function loadStockForm(){editingType=document.getElementById('sType').value;const x=day().stock[editingType]||blankStock()[editingType];[['sOF','opFilled'],['sRF','receiptFilled'],['sSF','saleFilled'],['sOE','opEmpty'],['sRE','recEmpty'],['sPE','toPlantEmpty'],['sDEF','defective'],['sDUE','pendingEmpty']].forEach(([id,k])=>document.getElementById(id).value=num(x[k]));calcStockForm()}
-function calcStockForm(){const g=id=>num(document.getElementById(id).value);const cf=g('sOF')+g('sRF')-g('sSF'),ce=g('sOE')+g('sRE')-g('sPE');document.getElementById('sCF').textContent=cf;document.getElementById('sCE').textContent=ce;document.getElementById('sHOLD').textContent=cf+ce+g('sDEF')+g('sDUE')}
-function saveStock(e){e.preventDefault();const date=document.getElementById('sDate').value;if(!date)return;const g=id=>num(document.getElementById(id).value);const x={opFilled:g('sOF'),receiptFilled:g('sRF'),saleFilled:g('sSF'),opEmpty:g('sOE'),recEmpty:g('sRE'),toPlantEmpty:g('sPE'),defective:g('sDEF'),pendingEmpty:g('sDUE')};const v=stockTotals(x);if(v.cf<0||v.ce<0){const er=document.getElementById('stockError');er.textContent='बिक्री/प्लांट भेजा उपलब्ध स्टॉक से अधिक है। संख्या ठीक करें।';er.classList.remove('hidden');return}ensureDay(date);state.days[date].stock[editingType]=x;selected=date;document.getElementById('datePick').value=date;save();closeModal('stockModal');render()}
-function openStaff(id=null){editingStaff=id;document.getElementById('staffForm').reset();document.getElementById('hId').value=id||'';document.getElementById('staffModalTitle').textContent=id?'हॉकर रिकॉर्ड संपादित करें':'नया हॉकर जोड़ें';if(id){const s=state.staff.find(x=>x.id===id),h=day().hawkers[id]||{};document.getElementById('hName').value=s.name;document.getElementById('hPhone').value=s.phone||'';document.getElementById('hType').value=s.type;document.getElementById('hIssued').value=num(h.issued);document.getElementById('hReturned').value=num(h.returned);document.getElementById('hUnsold').value=num(h.unsold);document.getElementById('hPrev').value=num(h.prevDue);document.getElementById('hRecovered').value=num(h.recovered)}else{document.getElementById('hPrev').value=0;document.getElementById('hRecovered').value=0}calcStaffForm();openModal('staffModal')}
-function calcStaffForm(){const g=id=>num(document.getElementById(id).value);const td=g('hIssued')-g('hUnsold')-g('hReturned'),rem=g('hPrev')-g('hRecovered')+td;document.getElementById('staffCalc').textContent=`आज नया बकाया: ${td} · कुल शेष: ${rem}`}
-function saveStaff(e){e.preventDefault();const id=document.getElementById('hId').value||'staff_'+Date.now();const s={id,name:document.getElementById('hName').value.trim(),phone:document.getElementById('hPhone').value.trim(),type:document.getElementById('hType').value};const h={issued:num(document.getElementById('hIssued').value),returned:num(document.getElementById('hReturned').value),unsold:num(document.getElementById('hUnsold').value),prevDue:num(document.getElementById('hPrev').value),recovered:num(document.getElementById('hRecovered').value)};const td=h.issued-h.unsold-h.returned;if(td<0||h.recovered>h.prevDue){const er=document.getElementById('staffError');er.textContent=td<0?'जमा खाली और अनसोल्ड भरा, सुबह दिए भरे सिलेंडर से अधिक नहीं हो सकते।':'पुराना जमा, पुराने बकाये से अधिक नहीं हो सकता।';er.classList.remove('hidden');return}const i=state.staff.findIndex(x=>x.id===id);if(i<0)state.staff.push(s);else state.staff[i]=s;day().hawkers[id]=h;save();closeModal('staffModal');renderStaff()}
-function removeStaff(id){const s=state.staff.find(x=>x.id===id);if(!confirm(`${s?.name||'यह हॉकर'} को सूची से हटाएँ? पुराने दिन के रिकॉर्ड सुरक्षित रहेंगे।`))return;state.staff=state.staff.filter(x=>x.id!==id);save();renderStaff()}
-function saveQuota(v){state.quota=Math.max(0,num(v));save();renderAudit()}
-function editAgency(){const n=prompt('एजेंसी का नाम',state.agency);if(n===null)return;const a=prompt('एजेंसी का पता',state.address);if(a===null)return;if(n.trim())state.agency=n.trim();if(a.trim())state.address=a.trim();save();document.getElementById('agencyTitle').textContent=state.agency;document.getElementById('agencyAddress').textContent=state.address+' · HP Gas हिसाब मैनेजर'}
-function exportBackup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});downloadBlob(blob,`HP_Gas_Backup_${today()}.json`)}
-function importBackup(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.days||!Array.isArray(x.staff))throw Error();if(!confirm('मौजूदा डेटा इम्पोर्ट किए गए बैकअप से बदल जाएगा। जारी रखें?'))return;state=x;selected=Object.keys(state.days).sort().pop()||today();ensureDay(selected);document.getElementById('datePick').value=selected;document.getElementById('agencyTitle').textContent=state.agency;document.getElementById('agencyAddress').textContent=state.address;save();render();alert('बैकअप सफलतापूर्वक खुल गया।')}catch(err){alert('यह सही HP Gas हिसाब मैनेजर बैकअप फाइल नहीं है।')}e.target.value=''};r.readAsText(file)}
-function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function exportCSV(){let lines=[['दिनांक',selected],['सिलेंडर प्रकार','ओपनिंग भरा','प्लांट आवक','बिक्री/इश्यू','क्लोजिंग भरा','ओपनिंग खाली','खाली प्राप्त','प्लांट भेजा','क्लोजिंग खाली','डिफेक्टिव','मार्केट बकाया','कुल होल्डिंग']];TYPES.forEach(t=>{const x=day().stock[t.id],v=stockTotals(x);lines.push([t.name,x.opFilled,x.receiptFilled,x.saleFilled,v.cf,x.opEmpty,x.recEmpty,x.toPlantEmpty,v.ce,x.defective,x.pendingEmpty,v.holding])});lines.push([],['हॉकर','सिलेंडर प्रकार','सुबह दिया','शाम खाली','अनसोल्ड भरा','आज बकाया','पुराना बकाया','पुराना जमा','कुल शेष']);state.staff.forEach(s=>{const h=day().hawkers[s.id]||{issued:0,returned:0,unsold:0,prevDue:0,recovered:0},c=hawkerCalc(h);lines.push([s.name,s.type,h.issued,h.returned,h.unsold,c.todayDue,h.prevDue,h.recovered,c.remaining])});const csv='\\ufeff'+lines.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\\r\\n');downloadBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),`HP_Gas_${selected}.csv`)}
-function printReport(){showTab('stock');window.print()}
-init();
-</script>
-<script>
-if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(err => console.log("SW registration failed", err));
-  });
-}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function previewStock(){ $("previewFilled").textContent=n("openFilled")+n("plantFilled")-n("filledIssued");$("previewEmpty").textContent=n("openEmpty")+n("emptyReturned")-n("emptySent");}
+["openFilled","plantFilled","filledIssued","openEmpty","emptyReturned","emptySent"].forEach(id=>$(id).addEventListener("input",previewStock));
+function previewMarket(){$("marketPreview").textContent=n("marketOpening")+n("marketGiven")-n("marketEmptyBack")-n("marketFilledBack")}
+["marketOpening","marketGiven","marketEmptyBack","marketFilledBack"].forEach(id=>$(id).addEventListener("input",previewMarket));
+function previewStaff(){$("staffPreview").textContent=n("staffOpening")+n("staffGiven")-n("staffReturned")}
+["staffOpening","staffGiven","staffReturned"].forEach(id=>$(id).addEventListener("input",previewStaff));
+$("stockForm").addEventListener("submit",e=>{e.preventDefault();let closingFilled=n("openFilled")+n("plantFilled")-n("filledIssued"),closingEmpty=n("openEmpty")+n("emptyReturned")-n("emptySent");if(closingFilled<0||closingEmpty<0)return alert("क्लोजिंग स्टॉक शून्य से कम नहीं हो सकता। एंट्री जाँचें।");addRecord("stock",{date:$("stockDate").value,type:$("stockType").value,openFilled:n("openFilled"),plantFilled:n("plantFilled"),filledIssued:n("filledIssued"),closingFilled,openEmpty:n("openEmpty"),emptyReturned:n("emptyReturned"),emptySent:n("emptySent"),closingEmpty,note:$("stockNote").value});e.target.reset();$("stockDate").value=today;previewStock();alert("दैनिक स्टॉक सेव हो गया।");carryStockOpening()});
+$("marketForm").addEventListener("submit",e=>{e.preventDefault();let due=n("marketOpening")+n("marketGiven")-n("marketEmptyBack")-n("marketFilledBack");if(due<0)return alert("बकाया शून्य से कम है। एंट्री जाँचें।");addRecord("market",{date:$("marketDate").value,name:$("partyName").value,phone:$("partyPhone").value,type:$("marketType").value,opening:n("marketOpening"),given:n("marketGiven"),emptyBack:n("marketEmptyBack"),filledBack:n("marketFilledBack"),closingDue:due,moneyDue:n("partyMoney")});e.target.reset();$("marketDate").value=today;previewMarket();alert("पार्टी एंट्री सेव हो गई।");carryMarketOpening()});
+$("staffForm").addEventListener("submit",e=>{e.preventDefault();let due=n("staffOpening")+n("staffGiven")-n("staffReturned");if(due<0)return alert("बकाया शून्य से कम है। एंट्री जाँचें।");addRecord("staff",{date:$("staffDate").value,name:$("staffName").value,type:$("staffType").value,opening:n("staffOpening"),given:n("staffGiven"),returned:n("staffReturned"),closingDue:due,cash:n("staffCash")});e.target.reset();$("staffDate").value=today;previewStaff();alert("स्टाफ एंट्री सेव हो गई।");carryStaffOpening()});
+$("cashForm").addEventListener("submit",e=>{e.preventDefault();state.cashbook.push({id:crypto.randomUUID(),date:$("cashDate").value,kind:$("cashKind").value,title:$("cashTitle").value.trim(),amount:n("cashAmount"),note:$("cashNote").value,savedAt:new Date().toISOString()});save();e.target.reset();$("cashDate").value=today;alert("जमा / खर्च एंट्री सेव हो गई।")});
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));}));
+$("saveTargets").onclick=()=>{targetTotals={};[["14 kg","target14"],["19 kg","target19"],["10 kg","target10"],["5 kg","target5"]].forEach(([t,id])=>{const v=$(id).value.trim();if(v!=="")targetTotals[t]=Math.max(0,Math.floor(Number(v)));});localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));$("targetMessage").textContent="सिलेंडर लक्ष्य सेव हो गया। डैशबोर्ड पर मिलान देखें।";render();};
+$("todayLabel").textContent=new Date().toLocaleDateString("hi-IN",{dateStyle:"full"});
+$("saveSettings").onclick=()=>{settings.url=$("scriptUrl").value.trim();settings.token=$("syncToken").value.trim();localStorage.setItem(key+"_settings",JSON.stringify(settings));$("syncMessage").textContent="URL सेव हो गया। अब 'अभी सिंक करें' दबाएँ।"};
+$("syncNow").onclick=syncNow;$("refreshBtn").onclick=render;
+async function syncNow(){if(!settings.url||!settings.token){$("syncMessage").textContent="पहले Web App URL और सिंक सुरक्षा कोड सेव करें।";return}
+ $("syncMessage").textContent="सिंक भेजा जा रहा है…";
+ try{await fetch(settings.url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"save",token:settings.token,data:state})});$("syncMessage").textContent="सिंक अनुरोध भेज दिया गया। Google Sheet खोलकर Stock, Market और Staff टैब जाँचें।";$("syncBadge").textContent="सिंक भेजा";}catch(err){$("syncMessage").textContent="सिंक नहीं हो पाया। URL और इंटरनेट कनेक्शन जाँचें।";}}
+// फोन में डाउनलोड होने वाला JSON बैकअप; PIN hash और Script URL जानबूझकर शामिल नहीं हैं।
+$("exportBackup").onclick=()=>{const payload={app:"HP Gas Hisab Manager 2.0",version:2,exportedAt:new Date().toISOString(),data:state,targetTotals};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`HP-Gas-Backup-${localDate()}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);$("backupMessage").textContent="बैकअप डाउनलोड शुरू हो गया। फाइल को सुरक्षित रखें।";};
+$("importBackupBtn").onclick=()=>$("importBackupFile").click();
+$("importBackupFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());const d=payload.data;if(!d||!Array.isArray(d.stock)||!Array.isArray(d.market)||!Array.isArray(d.staff))throw new Error("गलत बैकअप फाइल");if(!confirm("मौजूदा फोन डेटा की जगह बैकअप का डेटा लोड होगा। पहले मौजूदा डेटा का बैकअप लें। क्या जारी रखें?"))return;state=d;state.cashbook=Array.isArray(state.cashbook)?state.cashbook:[];targetTotals=payload.targetTotals||targetTotals;localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));save();$("backupMessage").textContent="बैकअप सफलतापूर्वक वापस लोड हो गया।";alert("बैकअप वापस आ गया।");}catch(err){$("backupMessage").textContent="बैकअप नहीं खुला: "+err.message;}finally{e.target.value="";}});
+
+render();previewStock();previewMarket();previewStaff();carryStockOpening();
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
 </script>
 </body></html>
