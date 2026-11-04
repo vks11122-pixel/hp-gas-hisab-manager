@@ -24,7 +24,7 @@
 </div>
 <h3>सिलेंडर के अनुसार स्टॉक</h3><div id="stockSummary" class="type-list"></div>
 <h3>अतिरिक्त जमा सिलेंडर</h3><div id="creditSummary" class="type-list"></div><h3>कुल सिलेंडर मिलान</h3><div id="reconcileSummary" class="type-list"></div>
-<div class="note"><b>मिलान का तरीका:</b> गोदाम का भरा + खाली स्टॉक और मार्केट/स्टाफ के पास बकाया सिलेंडर जोड़कर लक्ष्य से तुलना होगी। इससे कुल कमी या अधिकता दिखेगी।</div>
+<div class="note"><b>मिलान का तरीका:</b> गोदाम का भरा + खाली स्टॉक + मार्केट बकाया + स्टाफ बकाया जोड़कर लक्ष्य से तुलना होगी। क्रेडिट को अलग दिखाया जाएगा, कुल हिसाब से घटाया नहीं जाएगा।</div>
 <div class="note"><b>दैनिक क्लोजिंग:</b> हर दिन की एंट्री के बाद भरे और खाली स्टॉक की वास्तविक गिनती से तुलना करें।</div>
 </section>
 
@@ -264,7 +264,7 @@ function render(){
   const sc=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.emptyCredit||0));
   const mfc=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0));
   const sfc=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0));
-  const actual=f+e+m+st-mc-sc-mfc-sfc;accountedAll+=actual;
+  const actual=f+e+m+st;accountedAll+=actual;
   const target=Number(targetTotals[t.id]||0);if(target>0){targetAll+=target;targetsSet++;}
   const diff=target-actual;
   const status=target<=0?'लक्ष्य सेट नहीं':diff>0?`कम ${diff} सिलेंडर`:diff<0?`ज्यादा ${Math.abs(diff)} सिलेंडर`:'पूरा मिलान';
