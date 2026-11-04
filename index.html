@@ -24,7 +24,7 @@
 </div>
 <h3>सिलेंडर के अनुसार स्टॉक</h3><div id="stockSummary" class="type-list"></div>
 <h3>अतिरिक्त जमा सिलेंडर</h3><div id="creditSummary" class="type-list"></div><h3>कुल सिलेंडर मिलान</h3><div id="reconcileSummary" class="type-list"></div>
-<div class="note"><b>मिलान का तरीका:</b> गोदाम का भरा + खाली स्टॉक + मार्केट बकाया + स्टाफ बकाया जोड़कर लक्ष्य से तुलना होगी। क्रेडिट को अलग दिखाया जाएगा, कुल हिसाब से घटाया नहीं जाएगा।</div>
+<div class="note"><b>मिलान का तरीका:</b> गोदाम का भरा + खाली स्टॉक + मार्केट बकाया + स्टाफ बकाया जोड़कर मूल लक्ष्य और अतिरिक्त प्लांट स्टॉक से तुलना होगी।</div>
 <div class="note"><b>दैनिक क्लोजिंग:</b> हर दिन की एंट्री के बाद भरे और खाली स्टॉक की वास्तविक गिनती से तुलना करें।</div>
 </section>
 
@@ -106,15 +106,23 @@
 <h2>सेटिंग और बैकअप</h2>
 <div class="panel">
 <h3>कुल सिलेंडर का लक्ष्य तय करें</h3>
-<p class="help">हर प्रकार के आपके कुल उपलब्ध/रजिस्टर सिलेंडर की संख्या भरें। ऐप गोदाम + मार्केट बकाया + स्टाफ बकाया से मिलान करेगा।</p>
+<p class="help">रजिस्टर का मूल लक्ष्य और प्लांट से अतिरिक्त आए (अभी वापस नहीं गए) सिलेंडर अलग-अलग दर्ज करें। कुल लक्ष्य = मूल लक्ष्य + अतिरिक्त प्लांट सिलेंडर।</p>
 <div class="grid2">
 <label>14 KG लक्ष्य<input type="number" min="0" step="1" id="target14" placeholder="कुल संख्या"></label>
 <label>19 KG लक्ष्य<input type="number" min="0" step="1" id="target19" placeholder="कुल संख्या"></label>
 <label>10 KG लक्ष्य<input type="number" min="0" step="1" id="target10" placeholder="कुल संख्या"></label>
 <label>5 KG लक्ष्य<input type="number" min="0" step="1" id="target5" placeholder="कुल संख्या"></label>
 </div>
-<button class="primary" type="button" id="saveTargets">लक्ष्य सेव करें</button>
-<p id="targetMessage" class="help">लक्ष्य सेट करने के बाद डैशबोर्ड पर कमी/अधिकता दिखेगी।</p>
+<h3>प्लांट से अतिरिक्त आए (वापसी बाकी)</h3>
+<p class="help">ये सिलेंडर मूल रजिस्टर लक्ष्य से अलग हैं। वापस जाने तक यहाँ दर्ज रखें।</p>
+<div class="grid2">
+<label>14 KG अतिरिक्त<input type="number" min="0" step="1" id="extra14" placeholder="0"></label>
+<label>19 KG अतिरिक्त<input type="number" min="0" step="1" id="extra19" placeholder="0"></label>
+<label>10 KG अतिरिक्त<input type="number" min="0" step="1" id="extra10" placeholder="0"></label>
+<label>5 KG अतिरिक्त<input type="number" min="0" step="1" id="extra5" placeholder="0"></label>
+</div>
+<button class="primary" type="button" id="saveTargets">लक्ष्य और अतिरिक्त प्लांट स्टॉक सेव करें</button>
+<p id="targetMessage" class="help">सेव करने के बाद डैशबोर्ड पर मूल लक्ष्य और अतिरिक्त प्लांट स्टॉक अलग दिखेंगे।</p>
 </div>
 <h2>Google Sheets सिंक</h2>
 <div class="panel">
@@ -152,7 +160,8 @@ state.staff=Array.isArray(state.staff)?state.staff:[];
 state.staffMaster=Array.isArray(state.staffMaster)?state.staffMaster:[];
 let settings=JSON.parse(localStorage.getItem(key+"_settings")||'{"url":"","token":""}');
 let targetTotals=JSON.parse(localStorage.getItem(key+"_targets")||'{}');
-["14 kg","19 kg","10 kg","5 kg"].forEach((t,i)=>{const el=$("target"+["14","19","10","5"][i]);if(el)el.value=targetTotals[t]??"";});
+let extraPlantTotals=JSON.parse(localStorage.getItem(key+"_plant_extra")||'{}');
+["14 kg","19 kg","10 kg","5 kg"].forEach((t,i)=>{const suffix=["14","19","10","5"][i];const el=$("target"+suffix);if(el)el.value=targetTotals[t]??"";const extra=$("extra"+suffix);if(extra)extra.value=extraPlantTotals[t]??0;});
 function localDate(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`;}
 const today=localDate();
 ["stockDate","marketDate","staffDate","cashDate"].forEach(id=>$(id).value=today);
@@ -255,23 +264,20 @@ function render(){
  $("totalEmptyCredit").textContent=totalEmptyCredit;$("totalFilledCredit").textContent=totalFilledCredit;
  $("creditSummary").innerHTML=TYPES.map(t=>{const me=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.emptyCredit||0)),se=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.emptyCredit||0)),mf=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0)),sf=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0));return `<div class="type-row" style="background:${t.color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>खाली क्रेडिट<b>${me+se}</b><small>मार्केट ${me} · स्टाफ ${se}</small></span><span>भरा क्रेडिट<b>${mf+sf}</b><small>मार्केट ${mf} · स्टाफ ${sf}</small></span></div>`}).join("");
  $("marketDue").textContent=marketTotal;$("staffDue").textContent=staffTotal;$("totalEmptyCredit").textContent=totalEmptyCredit;$("totalFilledCredit").textContent=totalFilledCredit;
- let accountedAll=0,targetAll=0,targetsSet=0;
+ let accountedAll=0,targetAll=0,extraAll=0,targetsSet=0;
  $("reconcileSummary").innerHTML=TYPES.map(t=>{
   const f=latestStock(t.id,"closingFilled"),e=latestStock(t.id,"closingEmpty");
   const m=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.closingDue||0));
   const st=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.closingDue||0));
-  const mc=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.emptyCredit||0));
-  const sc=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.emptyCredit||0));
-  const mfc=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0));
-  const sfc=sum(staffBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0));
   const actual=f+e+m+st;accountedAll+=actual;
-  const target=Number(targetTotals[t.id]||0);if(target>0){targetAll+=target;targetsSet++;}
-  const diff=target-actual;
+  const target=Number(targetTotals[t.id]||0),extra=Number(extraPlantTotals[t.id]||0),expected=target+extra;extraAll+=extra;
+  if(target>0){targetAll+=target;targetsSet++;}
+  const diff=expected-actual;
   const status=target<=0?'लक्ष्य सेट नहीं':diff>0?`कम ${diff} सिलेंडर`:diff<0?`ज्यादा ${Math.abs(diff)} सिलेंडर`:'पूरा मिलान';
   const color=target<=0?'#edf2f6':diff>0?'#fce4d6':diff<0?'#fff2cc':'#e2f0d9';
-  return `<div class="type-row" style="background:${color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>लक्ष्य / कुल<b>${target||'—'}</b></span><span>हिसाब ${actual}<b>${status}</b></span></div>`;
+  return `<div class="type-row" style="background:${color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>मूल लक्ष्य ${target||'—'}<small>प्लांट अतिरिक्त ${extra} · कुल लक्ष्य ${expected}</small></span><span>हिसाब ${actual}<b>${status}</b></span></div>`;
  }).join("");
- if(targetsSet){const diff=targetAll-accountedAll;$("reconcileSummary").insertAdjacentHTML("beforeend",`<div class="calc"><span>कुल लक्ष्य: <b>${targetAll}</b></span><span>कुल हिसाब: <b>${accountedAll}</b></span><span>${diff>0?`कुल कमी: ${diff}`:diff<0?`कुल अधिक: ${Math.abs(diff)}`:'कुल मिलान सही'}</span></div>`)}
+ if(targetsSet){const expectedAll=targetAll+extraAll,diff=expectedAll-accountedAll;$("reconcileSummary").insertAdjacentHTML("beforeend",`<div class="calc"><span>मूल लक्ष्य: <b>${targetAll}</b></span><span>प्लांट अतिरिक्त: <b>${extraAll}</b></span><span>कुल लक्ष्य: <b>${expectedAll}</b></span><span>कुल हिसाब: <b>${accountedAll}</b></span><span>${diff>0?`कुल कमी: ${diff}`:diff<0?`कुल अधिक: ${Math.abs(diff)}`:'कुल मिलान सही'}</span></div>`)}
  $("stockRows").innerHTML=state.stock.slice(-12).reverse().map(x=>`<div class="record"><strong>${x.date} · ${typeLabel(x.type)}</strong><div>भरा: ${x.closingFilled} | खाली: ${x.closingEmpty}</div><div class="muted">${esc(x.note||"")}</div><div class="record-actions"><button type="button" class="edit-btn" data-edit-stock="${esc(x.id)}">✏️ एडिट करें</button></div></div>`).join("")||'<div class="record">अभी कोई एंट्री नहीं है।</div>';
  $("marketRows").innerHTML=state.market.slice(-20).reverse().map(x=>`<div class="record"><strong>${esc(x.name)} · ${typeLabel(x.type)}</strong><div>सिलेंडर बकाया: <b>${x.closingDue}</b> | खाली क्रेडिट: <b>+${x.emptyCredit||0}</b> | भरा क्रेडिट: <b>+${x.filledCredit||0}</b> | पैसे: ₹${x.moneyDue}</div><div class="muted">${x.date} · दिए ${x.given} · खाली वापस ${x.emptyBack}</div><div class="record-actions"><button type="button" class="edit-btn" data-edit-market="${esc(x.id)}">✏️ एडिट करें</button></div></div>`).join("")||'<div class="record">अभी कोई पार्टी एंट्री नहीं है।</div>';
  $("staffRows").innerHTML=state.staff.slice(-20).reverse().map(x=>`<div class="record"><strong>${esc(x.name)} · ${typeLabel(x.type)}</strong><div>सिलेंडर बकाया: <b>${x.closingDue}</b> | खाली क्रेडिट: <b>+${x.emptyCredit||0}</b> | भरा क्रेडिट: <b>+${x.filledCredit||0}</b> | कैश जमा ₹${x.cash}</div><div class="muted">${x.date} · दिए ${x.given} · खाली वापस ${x.returnedEmpty||0} · भरे वापस ${x.returnedFilled||0}</div><div class="record-actions"><button type="button" class="edit-btn" data-edit-staff="${esc(x.id)}">✏️ एडिट करें</button></div></div>`).join("")||'<div class="record">अभी कोई स्टाफ एंट्री नहीं है।</div>';
@@ -341,7 +347,7 @@ renderStaffMaster();
 $("staffName").addEventListener("change",()=>{const m=state.staffMaster.find(x=>x.name.toLowerCase()===$("staffName").value.trim().toLowerCase());if(m)$("staffPhone").value=m.phone||"";carryStaffOpening();});
 $("cashForm").addEventListener("submit",e=>{e.preventDefault();state.cashbook.push({id:crypto.randomUUID(),date:$("cashDate").value,kind:$("cashKind").value,title:$("cashTitle").value.trim(),amount:n("cashAmount"),note:$("cashNote").value,savedAt:new Date().toISOString()});save();e.target.reset();$("cashDate").value=today;alert("जमा / खर्च एंट्री सेव हो गई।")});
 document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));}));
-$("saveTargets").onclick=()=>{targetTotals={};[["14 kg","target14"],["19 kg","target19"],["10 kg","target10"],["5 kg","target5"]].forEach(([t,id])=>{const v=$(id).value.trim();if(v!=="")targetTotals[t]=Math.max(0,Math.floor(Number(v)));});localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));$("targetMessage").textContent="सिलेंडर लक्ष्य सेव हो गया। डैशबोर्ड पर मिलान देखें।";render();};
+$("saveTargets").onclick=()=>{targetTotals={};extraPlantTotals={};[["14 kg","target14","extra14"],["19 kg","target19","extra19"],["10 kg","target10","extra10"],["5 kg","target5","extra5"]].forEach(([t,id,extraId])=>{const v=$(id).value.trim(),ex=$(extraId).value.trim();if(v!=="")targetTotals[t]=Math.max(0,Math.floor(Number(v)));if(ex!=="")extraPlantTotals[t]=Math.max(0,Math.floor(Number(ex)));});localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));localStorage.setItem(key+"_plant_extra",JSON.stringify(extraPlantTotals));$("targetMessage").textContent="मूल लक्ष्य और अतिरिक्त प्लांट स्टॉक सेव हो गया।";render();};
 $("todayLabel").textContent=new Date().toLocaleDateString("hi-IN",{dateStyle:"full"});
 $("saveSettings").onclick=()=>{settings.url=$("scriptUrl").value.trim();settings.token=$("syncToken").value.trim();localStorage.setItem(key+"_settings",JSON.stringify(settings));$("syncMessage").textContent="URL सेव हो गया। अब 'अभी सिंक करें' दबाएँ।"};
 $("syncNow").onclick=syncNow;$("refreshBtn").onclick=render;
