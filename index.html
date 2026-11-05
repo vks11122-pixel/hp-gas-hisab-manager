@@ -183,10 +183,11 @@ function stockValueBeforeDate(base,field,throughDate){
 }
 function carryStockOpening(){
  const d=$("stockDate").value,t=$("stockType").value;if(!d)return;
- // उसी तारीख की सेव एंट्री मौजूद हो तो उसी को फॉर्म में खोलें; नया रिकॉर्ड न बनाएं।
- const same=state.stock.filter(x=>x.type===t&&x.date===d).sort((a,b)=>(a.savedAt||"").localeCompare(b.savedAt||""));
- if(same.length){editStockRecord(same[same.length-1].id);return;}
- const p=priorRecord(state.stock,d,x=>x.type===t);
+ // पहले उसी दिन की आखिरी सेव एंट्री से अगली एंट्री की ओपनिंग लें;
+ // इसे अपने-आप एडिट मोड में न खोलें। एडिट केवल "एडिट करें" बटन से होगा।
+ const same=state.stock.filter(x=>x.type===t&&x.date===d)
+   .sort((a,b)=>(a.savedAt||"").localeCompare(b.savedAt||""));
+ const p=same.length?same[same.length-1]:priorRecord(state.stock,d,x=>x.type===t);
  $("openFilled").value=stockValueBeforeDate(p,"closingFilled",d);
  $("openEmpty").value=stockValueBeforeDate(p,"closingEmpty",d);
  previewStock();
@@ -243,7 +244,7 @@ function calcDueAndEmptyCredit(opening,emptyCreditOpening,filledCreditOpening,gi
 }
 function previewMarket(){const r=calcDueAndEmptyCredit(n("marketOpening"),n("marketCreditOpening"),n("marketFilledCreditOpening"),n("marketGiven"),n("marketEmptyBack"),n("marketFilledBack"));$("marketPreview").textContent=`बकाया ${r.due} · खाली क्रेडिट +${r.emptyCredit} · भरा क्रेडिट +${r.filledCredit}`;}
 ["marketOpening","marketGiven","marketEmptyBack","marketFilledBack"].forEach(id=>$(id).addEventListener("input",previewMarket));
-$("stockForm").addEventListener("submit",e=>{e.preventDefault();let closingFilled=n("openFilled")+n("plantFilled")-n("filledIssued"),closingEmpty=n("openEmpty")+n("emptyReturned")-n("emptySent");if(closingFilled<0||closingEmpty<0)return alert("क्लोजिंग स्टॉक शून्य से कम नहीं हो सकता। एंट्री जाँचें।");const obj={date:$("stockDate").value,type:$("stockType").value,openFilled:n("openFilled"),plantFilled:n("plantFilled"),filledIssued:n("filledIssued"),closingFilled,openEmpty:n("openEmpty"),emptyReturned:n("emptyReturned"),emptySent:n("emptySent"),closingEmpty,note:$("stockNote").value};if(editingStockId){const id=editingStockId;const old=state.stock.find(x=>x.id===id);if(!old)return;Object.assign(old,obj);save();editStockRecord(id);alert("दैनिक स्टॉक एंट्री में सुधार सेव हो गया। पुराने रिकॉर्ड सुरक्षित हैं।");}else{addRecord("stock",obj);e.target.reset();$("stockDate").value=today;previewStock();alert("दैनिक स्टॉक सेव हो गया।");carryStockOpening();}});
+$("stockForm").addEventListener("submit",e=>{e.preventDefault();let closingFilled=n("openFilled")+n("plantFilled")-n("filledIssued"),closingEmpty=n("openEmpty")+n("emptyReturned")-n("emptySent");if(closingFilled<0||closingEmpty<0)return alert("क्लोजिंग स्टॉक शून्य से कम नहीं हो सकता। एंट्री जाँचें।");const obj={date:$("stockDate").value,type:$("stockType").value,openFilled:n("openFilled"),plantFilled:n("plantFilled"),filledIssued:n("filledIssued"),closingFilled,openEmpty:n("openEmpty"),emptyReturned:n("emptyReturned"),emptySent:n("emptySent"),closingEmpty,note:$("stockNote").value};if(editingStockId){const id=editingStockId;const old=state.stock.find(x=>x.id===id);if(!old)return;Object.assign(old,obj);save();editStockRecord(id);alert("दैनिक स्टॉक एंट्री में सुधार सेव हो गया। पुराने रिकॉर्ड सुरक्षित हैं।");}else{addRecord("stock",obj);resetStockEdit();alert("दैनिक स्टॉक सेव हो गया।");}});
 $("cancelStockEdit").addEventListener("click",resetStockEdit);
 document.addEventListener("click",e=>{const b=e.target.closest("[data-edit-stock]");if(b)editStockRecord(b.dataset.editStock);});
 $("marketForm").addEventListener("submit",e=>{
