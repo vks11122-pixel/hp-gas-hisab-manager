@@ -5,6 +5,7 @@
 <meta name="theme-color" content="#123b5d"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><meta name="description" content="HP Gas हिसाब मैनेजर">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f6f9;color:#172b3a;font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif}.top{background:#123b5d;color:white;padding:18px 16px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}.top h1{font-size:20px;margin:3px 0}.eyebrow{font-size:11px;opacity:.8}.pill{font-size:11px;background:#ffffff20;border:1px solid #ffffff55;padding:6px 9px;border-radius:20px;white-space:nowrap}.tabs{display:flex;overflow:auto;background:#fff;position:sticky;top:0;z-index:3;box-shadow:0 2px 8px #10203012}.tabs button{border:0;background:none;padding:13px 14px;white-space:nowrap;color:#536575;font-weight:650}.tabs button.active{color:#123b5d;border-bottom:3px solid #1672ad}main{max-width:760px;margin:auto;padding:16px 13px 28px}.page{display:none}.page.active{display:block}h2{font-size:20px;margin:5px 0}h3{font-size:16px;margin:20px 0 10px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.section-head p,.help{font-size:12px;color:#667887;margin:4px 0 12px}.small{border:1px solid #cbd7df;background:#fff;border-radius:9px;padding:8px 12px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0 20px}.metric{border-radius:13px;padding:14px;min-height:91px;display:flex;flex-direction:column;justify-content:space-between}.metric span{font-size:12px}.metric b{font-size:27px}.blue{background:#d9eaf7}.green{background:#e2f0d9}.yellow{background:#fff2cc}.orange{background:#fce4d6}.type-list{display:grid;gap:8px}.type-row{display:grid;grid-template-columns:74px 1fr 1fr;gap:8px;align-items:center;border-radius:10px;padding:11px;font-size:13px}.type-row b{display:block;font-size:17px}.type-row small{color:#536575}.panel{background:white;padding:15px;border-radius:14px;box-shadow:0 2px 10px #122b3a0c;margin:12px 0}label{display:block;font-size:13px;font-weight:650;margin:10px 0;color:#334b5b}input,select{display:block;width:100%;margin-top:6px;border:1px solid #cbd7df;border-radius:9px;padding:12px;font:inherit;background:#fff;color:#172b3a;min-height:44px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.calc{background:#eef5f9;padding:12px;border-radius:9px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13px;margin:12px 0}.primary,.secondary{width:100%;border:0;border-radius:10px;padding:13px;font-weight:750;font-size:15px;margin-top:10px}.primary{background:#145b89;color:white}.secondary{background:#e5edf3;color:#123b5d}.records{display:grid;gap:8px}.record{background:#fff;border:1px solid #e1e8ed;border-radius:10px;padding:11px 12px;font-size:13px}.record strong{font-size:14px}.record .muted{color:#667887;font-size:11px;margin-top:4px}.record-actions{display:flex;gap:8px;margin-top:9px}.edit-btn{border:1px solid #b8cbd8;background:#edf5fa;color:#123b5d;border-radius:8px;padding:7px 12px;font-weight:700}.editing-title{color:#b45309;font-weight:750;font-size:13px;margin:8px 0}.note{background:#eaf2f7;padding:13px;border-radius:10px;font-size:13px;line-height:1.5;margin-top:18px}footer{text-align:center;color:#80909b;font-size:11px;padding:20px}ol{padding-left:20px;font-size:13px;line-height:1.7}@media(min-width:600px){.cards{grid-template-columns:repeat(4,1fr)}main{padding-top:22px}}
+.saved-parties{margin:8px 0 14px}.party-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.party-chip{border:1px solid #b7cbd8;background:#edf5f9;color:#123b52;border-radius:18px;padding:9px 13px;font-weight:600;cursor:pointer}.party-chip:active{background:#d7eaf4}
 </style>
 <title>HP Gas हिसाब मैनेजर 2.0</title>
 </head>
@@ -52,7 +53,8 @@
 <h2>मार्केट / पार्टी बकाया</h2>
 <form id="marketForm" class="panel">
 <label>तारीख<input type="date" id="marketDate" required></label>
-<label>पार्टी / ग्राहक का नाम<input id="partyName" required placeholder="पार्टी का नाम"></label>
+<label>पार्टी / ग्राहक का नाम<input id="partyName" required placeholder="पार्टी का नाम" autocomplete="off"></label>
+<div class="saved-parties"><div class="muted">पहले से सेव पार्टी — नाम पर टैप करें</div><div id="savedPartyList" class="party-chips"></div></div>
 <label>मोबाइल / पहचान<input id="partyPhone" placeholder="वैकल्पिक"></label>
 <label>सिलेंडर प्रकार<select id="marketType"></select></label>
 <div class="grid2">
@@ -111,6 +113,12 @@
 <p id="syncMessage" class="help">अभी लोकल सेविंग चालू है।</p>
 </div>
 <div class="panel">
+<h3>पुराना डेटा हटाएँ (V1)</h3>
+<p class="help">यह विकल्प केवल पुराने HP Gas हिसाब मैनेजर V1 का फोन में सेव डेटा और उसकी सेटिंग हटाएगा। नए ऐप का V2 स्टॉक, मार्केट एंट्री, लक्ष्य और बैकअप सुरक्षित रहेंगे। हटाने के बाद V1 डेटा वापस नहीं मिलेगा।</p>
+<button class="secondary" type="button" id="deleteOldV1">केवल पुराना V1 डेटा हटाएँ</button>
+<p id="oldDataMessage" class="help">नया V2 डेटा इस कार्रवाई से नहीं बदलेगा।</p>
+</div>
+<div class="panel">
 <h3>Google Sheet सेटअप</h3>
 <ol><li>नई Google Sheet बनाएं।</li><li>Extensions → Apps Script खोलें।</li><li>इस पैकेज की <b>Code.gs</b> फाइल का कोड वहाँ पेस्ट करें और सेव करें।</li><li>Deploy → New deployment → Web app चुनें। Execute as: Me और access: Anyone रखें (अपने Google खाते की सुरक्षा नीति के अनुसार)।</li><li>Deploy से मिली URL यहाँ पेस्ट करें।</li></ol>
 <p class="help">वेब ऐप URL सार्वजनिक रूप से खुलने योग्य endpoint है। इसे निजी रखें। एजेंसी का डेटा संवेदनशील हो तो Google खाते की access policy और Sheet sharing सीमित रखें।</p>
@@ -159,6 +167,19 @@ function resetStockEdit(){editingStockId=null;$("stockForm").reset();$("stockDat
 function resetMarketEdit(){
  editingMarketId=null;$("marketForm").reset();$("marketDate").value=today;$("marketCreditOpening").value=0;$("marketFilledCreditOpening").value=0;$("marketSubmitBtn").textContent="पार्टी एंट्री सेव करें";$("cancelMarketEdit").hidden=true;previewMarket();
 }
+function savedParties(){
+ const map=new Map();
+ state.market.forEach(x=>{const name=(x.name||"").trim();if(!name)return;const k=name.toLocaleLowerCase("hi");const old=map.get(k);if(!old||(x.savedAt||"")>(old.savedAt||""))map.set(k,{name,phone:x.phone||""});});
+ return [...map.values()].sort((a,b)=>a.name.localeCompare(b.name,"hi"));
+}
+function renderSavedParties(){
+ const host=$("savedPartyList");if(!host)return;
+ const q=($("partyName").value||"").trim().toLocaleLowerCase("hi");
+ const rows=savedParties().filter(p=>!q||p.name.toLocaleLowerCase("hi").includes(q));
+ host.innerHTML=rows.map((p,i)=>`<button type="button" class="party-chip" data-party-index="${i}">${esc(p.name)}</button>`).join("")||'<span class="muted">अभी कोई सेव पार्टी नहीं है। पहली पार्टी एंट्री सेव करने पर नाम यहाँ दिखेगा।</span>';
+ host.querySelectorAll("[data-party-index]").forEach((b,i)=>b.addEventListener("click",()=>{const p=rows[i];$("partyName").value=p.name;$("partyPhone").value=p.phone||"";carryMarketOpening();}));
+}
+$("partyName").addEventListener("input",renderSavedParties);
 function editMarketRecord(id){
  const x=state.market.find(r=>r.id===id);if(!x)return;
  editingMarketId=id;showTab("market");
@@ -258,7 +279,7 @@ $("marketForm").addEventListener("submit",e=>{
   recalcLedgerGroup(state.market,oldName,oldType);recalcLedgerGroup(state.market,name,type);
   resetMarketEdit();save();alert("मार्केट एंट्री में सुधार सेव हो गया। आगे की पार्टी बकाया एंट्रियाँ भी दोबारा मिलाई गई हैं।");
  }else{
-  addRecord("market",obj);e.target.reset();$("marketDate").value=today;previewMarket();alert("पार्टी एंट्री सेव हो गई।");carryMarketOpening();
+  addRecord("market",obj);e.target.reset();$("marketDate").value=today;previewMarket();renderSavedParties();alert("पार्टी एंट्री सेव हो गई।");carryMarketOpening();
  }
 });
 $("cancelMarketEdit").addEventListener("click",resetMarketEdit);
@@ -267,6 +288,14 @@ document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",
 $("saveTargets").onclick=()=>{targetTotals={};extraPlantTotals={};[["14 kg","target14","extra14"],["19 kg","target19","extra19"],["10 kg","target10","extra10"],["5 kg","target5","extra5"]].forEach(([t,id,extraId])=>{const v=$(id).value.trim(),ex=$(extraId).value.trim();if(v!=="")targetTotals[t]=Math.max(0,Math.floor(Number(v)));if(ex!=="")extraPlantTotals[t]=Math.max(0,Math.floor(Number(ex)));});localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));localStorage.setItem(key+"_plant_extra",JSON.stringify(extraPlantTotals));$("targetMessage").textContent="मूल लक्ष्य और अतिरिक्त प्लांट स्टॉक सेव हो गया।";render();};
 $("todayLabel").textContent=new Date().toLocaleDateString("hi-IN",{dateStyle:"full"});
 $("saveSettings").onclick=()=>{settings.url=$("scriptUrl").value.trim();settings.token=$("syncToken").value.trim();localStorage.setItem(key+"_settings",JSON.stringify(settings));$("syncMessage").textContent="URL सेव हो गया। अब 'अभी सिंक करें' दबाएँ।"};
+$("deleteOldV1").onclick=()=>{
+ const ok=confirm("क्या आप केवल पुराने V1 डेटा को हमेशा के लिए हटाना चाहते हैं? नए V2 का स्टॉक और मार्केट डेटा सुरक्षित रहेगा।");
+ if(!ok)return;
+ const keys=["hpGasManagerV1","hpGasManagerV1_settings","hpGasManagerV1_targets","hpGasManagerV1_plant_extra"];
+ keys.forEach(k=>localStorage.removeItem(k));
+ $("oldDataMessage").textContent="पुराने V1 डेटा की उपलब्ध लोकल कॉपी हटा दी गई। नया V2 डेटा सुरक्षित है।";
+ alert("पुराना V1 डेटा हटाने की कार्रवाई पूरी हुई। नया V2 डेटा नहीं बदला है।");
+};
 $("syncNow").onclick=syncNow;$("refreshBtn").onclick=render;
 async function syncNow(){if(!settings.url||!settings.token){$("syncMessage").textContent="पहले Web App URL और सिंक सुरक्षा कोड सेव करें।";return}
  $("syncMessage").textContent="सिंक भेजा जा रहा है…";
@@ -355,7 +384,7 @@ pdfButton.className="primary";
 pdfButton.style.cssText="width:100%;margin:12px 0;padding:16px;border-radius:12px;font-size:17px";
 pdfButton.addEventListener("click",createFullPDFReport);
 $("dashboard").appendChild(pdfButton);
- render();previewStock();previewMarket();carryStockOpening();
+ renderSavedParties();render();previewStock();previewMarket();carryStockOpening();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
 </script>
 </body></html>
