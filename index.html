@@ -27,7 +27,7 @@
 <h3>सिलेंडर के अनुसार स्टॉक</h3><div id="stockSummary" class="type-list"></div>
 <h3>अतिरिक्त जमा सिलेंडर</h3><div id="creditSummary" class="type-list"></div><h3>कुल सिलेंडर मिलान</h3><div id="reconcileSummary" class="type-list"></div>
 <div class="note"><b>मिलान का तरीका:</b> गोदाम का भरा + खाली स्टॉक + भरे और खाली दोनों प्रकार का मार्केट बकाया जोड़कर मूल लक्ष्य और अतिरिक्त प्लांट स्टॉक से तुलना होगी।</div>
-<div class="note"><b>दैनिक क्लोजिंग:</b> हर दिन की एंट्री के बाद भरे और खाली स्टॉक की वास्तविक गिनती से तुलना करें।</div>
+<div class="note"><b>दैनिक क्लोजिंग:</b> हर दिन की एंट्री के बाद भरे और खाली स्टॉक की वास्तविक गिनती से तुलना करें। मार्केट में उधार दिए गए खाली सिलेंडर गोदाम के खाली स्टॉक से घटेंगे; वापस मिलने पर फिर जुड़ेंगे।</div>
 </section>
 
 <section id="stock" class="page">
@@ -301,8 +301,16 @@ function render(){
  $("marketDueSummary").innerHTML=TYPES.map(t=>{const rows=marketBalances.filter(x=>x.type===t.id);const due=sum(rows,x=>Number(x.closingDue||0));const emptyDue=sum(rows,x=>Number(x.emptyDue||0));const emptyCredit=sum(rows,x=>Number(x.emptyCredit||0));const filledCredit=sum(rows,x=>Number(x.filledCredit||0));return `<div class="type-row" style="background:${t.color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>भरे बकाया<b>${due}</b><small>खाली उधार ${emptyDue}</small></span><span>खाली / भरा क्रेडिट<b>${emptyCredit} / ${filledCredit}</b></span></div>`}).join("");
  const partyRows=[...marketBalances].sort((a,b)=>(a.type||"").localeCompare(b.type||"")||(a.name||"").localeCompare(b.name||""));
  $("marketPartySummary").innerHTML=partyRows.map(x=>`<div class="record"><strong>${esc(x.name||"बिना नाम")} · ${typeLabel(x.type)}</strong><div>भरे बकाया: <b>${Number(x.closingDue||0)}</b> | खाली उधार बकाया: <b>${Number(x.emptyDue||0)}</b> | खाली क्रेडिट: <b>+${Number(x.emptyCredit||0)}</b> | भरा क्रेडिट: <b>+${Number(x.filledCredit||0)}</b></div><div class="muted">पैसों का बकाया: ₹${Number(x.moneyDue||0).toLocaleString("en-IN")}</div></div>`).join("")||'<div class="record">अभी मार्केट की कोई एंट्री नहीं है।</div>';
- $("stockSummary").innerHTML=TYPES.map(t=>{let f=latestStock(t.id,"closingFilled"),e=latestStock(t.id,"closingEmpty");filled+=f;empty+=e;
-  return `<div class="type-row" style="background:${t.color}"><b>${t.id}</b><span>भरे स्टॉक<b>${f}</b></span><span>खाली स्टॉक<b>${e}</b></span></div>`}).join("");
+ // मार्केट में उधार दिए गए खाली सिलेंडर गोदाम के उपलब्ध खाली स्टॉक से घटाएँ।
+ // खाली सिलेंडर वापस मिलने पर खाली बकाया घटेगा और गोदाम का उपलब्ध स्टॉक अपने-आप बढ़ेगा।
+ $("stockSummary").innerHTML=TYPES.map(t=>{
+  const f=latestStock(t.id,"closingFilled");
+  const bookEmpty=latestStock(t.id,"closingEmpty");
+  const marketEmptyDue=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.emptyDue||0));
+  const e=Math.max(0,bookEmpty-marketEmptyDue);
+  filled+=f;empty+=e;
+  return `<div class="type-row" style="background:${t.color}"><b>${t.id}</b><span>भरे स्टॉक<b>${f}</b></span><span>गोदाम में खाली<b>${e}</b><small>मार्केट में उधार: ${marketEmptyDue}</small></span></div>`;
+ }).join("");
  $("totalFilled").textContent=filled;$("totalEmpty").textContent=empty;
  $("totalEmptyCredit").textContent=totalEmptyCredit;$("totalFilledCredit").textContent=totalFilledCredit;
  $("creditSummary").innerHTML=TYPES.map(t=>{const me=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.emptyCredit||0)),mf=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.filledCredit||0));return `<div class="type-row" style="background:${t.color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>खाली क्रेडिट<b>${me}</b><small>मार्केट</small></span><span>भरा क्रेडिट<b>${mf}</b><small>मार्केट</small></span></div>`}).join("");
