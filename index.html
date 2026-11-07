@@ -12,7 +12,7 @@
 <body>
 <header class="top"><div><div class="eyebrow">एजेंसी स्टॉक एवं बकाया</div><h1>HP Gas हिसाब मैनेजर 2.0</h1></div><span id="syncBadge" class="pill">लोकल डेटा</span></header>
 <nav class="tabs">
-<button data-tab="dashboard" class="active">डैशबोर्ड</button><button data-tab="stock">दैनिक स्टॉक</button><button data-tab="market">मार्केट</button><button data-tab="settings">सेटिंग</button>
+<button data-tab="dashboard" class="active">डैशबोर्ड</button><button data-tab="stock">दैनिक स्टॉक</button><button data-tab="market">मार्केट</button><button data-tab="staff">स्टाफ हिसाब</button><button data-tab="settings">सेटिंग</button>
 </nav>
 <main>
 <section id="dashboard" class="page active">
@@ -21,7 +21,7 @@
 <div class="metric blue"><span>कुल भरा स्टॉक</span><b id="totalFilled">0</b></div>
 <div class="metric green"><span>कुल खाली स्टॉक</span><b id="totalEmpty">0</b></div>
 <div class="metric yellow"><span>मार्केट सिलेंडर बकाया</span><b id="marketDue">0</b></div>
-<div class="metric yellow"><span>खाली सिलेंडर क्रेडिट</span><b id="totalEmptyCredit">0</b></div><div class="metric green"><span>भरे सिलेंडर क्रेडिट</span><b id="totalFilledCredit">0</b></div>
+<div class="metric yellow"><span>खाली सिलेंडर क्रेडिट</span><b id="totalEmptyCredit">0</b></div><div class="metric green"><span>भरे सिलेंडर क्रेडिट</span><b id="totalFilledCredit">0</b></div><div class="metric orange"><span>स्टाफ भरे बकाया</span><b id="staffFilledDueTotal">0</b></div><div class="metric orange"><span>स्टाफ खाली बकाया</span><b id="staffEmptyDueTotal">0</b></div>
 </div>
 <h3>मार्केट बकाया का विवरण</h3><div id="marketDueSummary" class="type-list"></div><h3>पार्टीवार बकाया</h3><div id="marketPartySummary" class="records"></div>
 <h3>सिलेंडर के अनुसार स्टॉक</h3><div id="stockSummary" class="type-list"></div>
@@ -76,6 +76,33 @@
 
 
 
+
+
+<section id="staff" class="page">
+<h2>डिलीवरी स्टाफ का हिसाब</h2>
+<p class="help">स्टाफ को दिए गए भरे सिलेंडर, वापस मिले खाली/भरे सिलेंडर और खाली सिलेंडर का अलग बकाया दर्ज करें।</p>
+<form id="staffForm" class="panel">
+<label>तारीख<input type="date" id="staffDate" required></label>
+<label>स्टाफ का नाम<input id="staffName" required placeholder="डिलीवरीमैन का नाम" autocomplete="off"></label>
+<label>मोबाइल / पहचान<input id="staffPhone" placeholder="वैकल्पिक"></label>
+<label>सिलेंडर प्रकार<select id="staffType"></select></label>
+<div class="grid2">
+<label>पहले का भरे सिलेंडर बकाया<input type="number" min="0" id="staffOpening" value="0"></label>
+<label>आज भरे सिलेंडर दिए<input type="number" min="0" id="staffGiven" value="0"></label>
+<label>आज खाली सिलेंडर वापस मिले<input type="number" min="0" id="staffEmptyBack" value="0"></label>
+<label>आज भरे सिलेंडर वापस मिले<input type="number" min="0" id="staffFilledBack" value="0"></label>
+<label>पहले का खाली सिलेंडर बकाया<input type="number" min="0" id="staffEmptyDueOpening" value="0"></label>
+<label>आज खाली सिलेंडर दिए<input type="number" min="0" id="staffEmptyGiven" value="0"></label>
+<label>आज खाली सिलेंडर जमा हुए<input type="number" min="0" id="staffEmptyReceived" value="0"></label>
+</div>
+<div class="calc"><span>भरे सिलेंडर बकाया: <b id="staffPreview">0</b></span><span>खाली सिलेंडर बकाया: <b id="staffEmptyPreview">0</b></span><span>अतिरिक्त खाली जमा: <b id="staffCreditPreview">0</b></span></div>
+<input type="hidden" id="staffCreditOpening" value="0"><input type="hidden" id="staffFilledCreditOpening" value="0">\n<label>नोट<input id="staffNote" placeholder="वैकल्पिक"></label>
+<button class="primary" id="staffSubmitBtn">स्टाफ एंट्री सेव करें</button>
+<button class="secondary" type="button" id="cancelStaffEdit" hidden>एडिट रद्द करें</button>
+</form>
+<h3>स्टाफवार बकाया</h3><div id="staffSummary" class="records"></div>
+<h3>स्टाफ की हाल की एंट्री</h3><div id="staffRows" class="records"></div>
+</section>
 
 <section id="settings" class="page">
 <h2>सेटिंग और बैकअप</h2>
@@ -135,9 +162,9 @@
 const $=id=>document.getElementById(id);
 const TYPES=[{id:"14 kg",label:"14 KG घरेलू",color:"#D9EAF7"},{id:"19 kg",label:"19 KG कमर्शियल",color:"#E2F0D9"},{id:"10 kg",label:"10 KG कमर्शियल",color:"#FFF2CC"},{id:"5 kg",label:"5 KG कमर्शियल",color:"#FCE4D6"}];
 const key="hpGasManagerV2";
-let state=JSON.parse(localStorage.getItem(key)||'{"stock":[],"market":[]}');
-let editingMarketId=null, editingStockId=null;
-state.market=Array.isArray(state.market)?state.market:[];state.stock=Array.isArray(state.stock)?state.stock:[];
+let state=JSON.parse(localStorage.getItem(key)||'{"stock":[],"market":[],"staff":[]}');
+let editingMarketId=null, editingStockId=null, editingStaffId=null;
+state.market=Array.isArray(state.market)?state.market:[];state.stock=Array.isArray(state.stock)?state.stock:[];state.staff=Array.isArray(state.staff)?state.staff:[];
 
 let settings=JSON.parse(localStorage.getItem(key+"_settings")||'{"url":"","token":""}');
 let targetTotals=JSON.parse(localStorage.getItem(key+"_targets")||'{}');
@@ -145,15 +172,25 @@ let extraPlantTotals=JSON.parse(localStorage.getItem(key+"_plant_extra")||'{}');
 ["14 kg","19 kg","10 kg","5 kg"].forEach((t,i)=>{const suffix=["14","19","10","5"][i];const el=$("target"+suffix);if(el)el.value=targetTotals[t]??"";const extra=$("extra"+suffix);if(extra)extra.value=extraPlantTotals[t]??0;});
 function localDate(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`;}
 const today=localDate();
-["stockDate","marketDate"].forEach(id=>$(id).value=today);
-["stockType","marketType"].forEach(id=>$(id).innerHTML=TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join(""));
+["stockDate","marketDate","staffDate"].forEach(id=>$(id).value=today);
+["stockType","marketType","staffType"].forEach(id=>$(id).innerHTML=TYPES.map(t=>`<option value="${t.id}">${t.label}</option>`).join(""));
 $("scriptUrl").value=settings.url||"";$("syncToken").value=settings.token||"";
-function save(){delete state.staff;delete state.staffMaster;localStorage.setItem(key,JSON.stringify(state));render();$("syncBadge").textContent="फोन में सेव";$("syncBadge").style.background="#ffffff25";if(settings.url&&settings.token)syncNow(true);}
+function save(){localStorage.setItem(key,JSON.stringify(state));render();$("syncBadge").textContent="फोन में सेव";$("syncBadge").style.background="#ffffff25";if(settings.url&&settings.token)syncNow(true);}
 function n(id){return Number($(id).value||0)}
 function typeLabel(id){return TYPES.find(t=>t.id===id)?.label||id}
 function addRecord(arr,obj){state[arr].push({...obj,id:crypto.randomUUID(),savedAt:new Date().toISOString()});save()}
 
 function sortLedgerRows(rows){return rows.sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.savedAt||"").localeCompare(b.savedAt||""))}
+
+function recalcStockGroup(type){
+ const rows=sortLedgerRows(state.stock.filter(x=>x.type===type));
+ for(let i=1;i<rows.length;i++){
+  rows[i].openFilled=Number(rows[i-1].closingFilled||0);
+  rows[i].openEmpty=Number(rows[i-1].closingEmpty||0);
+  rows[i].closingFilled=rows[i].openFilled+Number(rows[i].plantFilled||0)-Number(rows[i].filledIssued||0);
+  rows[i].closingEmpty=rows[i].openEmpty+Number(rows[i].emptyReturned||0)-Number(rows[i].emptySent||0);
+ }
+}
 function recalcLedgerGroup(arr,name,type){
  const rows=sortLedgerRows(arr.filter(x=>x.type===type&&(x.name||"").trim().toLowerCase()===(name||"").trim().toLowerCase()));
  for(let i=0;i<rows.length;i++){
@@ -193,6 +230,32 @@ function editMarketRecord(id){
  $("marketEmptyBack").value=x.emptyBack||0;$("marketFilledBack").value=x.filledBack||0;$("partyMoney").value=x.moneyDue||0;
  $("marketSubmitBtn").textContent="बदली हुई पार्टी एंट्री सेव करें";$("cancelMarketEdit").hidden=false;previewMarket();window.scrollTo(0,0);
 }
+
+function resetStaffEdit(){
+ editingStaffId=null;$("staffForm").reset();$("staffDate").value=today;$("staffCreditOpening").value=0;$("staffFilledCreditOpening").value=0;
+ ["staffOpening","staffGiven","staffEmptyBack","staffFilledBack","staffEmptyDueOpening","staffEmptyGiven","staffEmptyReceived"].forEach(id=>$(id).value=0);
+ $("staffSubmitBtn").textContent="स्टाफ एंट्री सेव करें";$("cancelStaffEdit").hidden=true;previewStaff();
+}
+function editStaffRecord(id){
+ const x=state.staff.find(r=>r.id===id);if(!x)return;editingStaffId=id;showTab("staff");
+ $("staffDate").value=x.date||today;$("staffName").value=x.name||"";$("staffPhone").value=x.phone||"";$("staffType").value=x.type;
+ $("staffOpening").value=x.opening||0;$("staffCreditOpening").value=x.creditOpening||0;$("staffFilledCreditOpening").value=x.filledCreditOpening||0;$("staffGiven").value=x.given||0;$("staffEmptyBack").value=x.emptyBack||0;$("staffFilledBack").value=x.filledBack||0;
+ $("staffEmptyDueOpening").value=x.emptyDueOpening||0;$("staffEmptyGiven").value=x.emptyGiven||0;$("staffEmptyReceived").value=x.emptyReceived||0;$("staffNote").value=x.note||"";
+ $("staffSubmitBtn").textContent="बदली हुई स्टाफ एंट्री सेव करें";$("cancelStaffEdit").hidden=false;previewStaff();window.scrollTo(0,0);
+}
+function carryStaffOpening(){
+ const d=$("staffDate").value,t=$("staffType").value,name=$("staffName").value.trim().toLowerCase();if(!d||!name||editingStaffId)return;
+ const match=x=>x.type===t&&(x.name||"").trim().toLowerCase()===name;
+ const same=state.staff.filter(x=>x.date===d&&match(x)).sort((a,b)=>(a.savedAt||"").localeCompare(b.savedAt||""));
+ const p=same.length?same[same.length-1]:priorRecord(state.staff,d,match);
+ $("staffOpening").value=p?p.closingDue:0;$("staffEmptyDueOpening").value=p?p.emptyDue||0:0;
+ $("staffCreditOpening").value=p?p.emptyCredit||0:0;$("staffFilledCreditOpening").value=p?p.filledCredit||0:0;previewStaff();
+}
+function previewStaff(){
+ const r=calcDueAndEmptyCredit(n("staffOpening"),n("staffCreditOpening"),n("staffFilledCreditOpening"),n("staffGiven"),n("staffEmptyBack"),n("staffFilledBack"));
+ $("staffPreview").textContent=r.due;$("staffEmptyPreview").textContent=Math.max(0,n("staffEmptyDueOpening")+n("staffEmptyGiven")-n("staffEmptyReceived"));$("staffCreditPreview").textContent=r.emptyCredit;
+}
+
 function sum(arr,fn){return arr.reduce((a,x)=>a+fn(x),0)}
 function latestBalances(arr, keyFn){const map=new Map();arr.forEach(x=>{const k=keyFn(x);const old=map.get(k);if(!old||(x.date||"")>(old.date||"")||((x.date||"")===(old.date||"")&&(x.savedAt||"")>=(old.savedAt||"")))map.set(k,x)});return [...map.values()]}
 function latestStock(type,field){
@@ -218,7 +281,13 @@ function carryStockOpening(){
  $("openEmpty").value=stockValueBeforeDate(p,"closingEmpty",d);
  previewStock();
 }
-function carryMarketOpening(){const d=$("marketDate").value,t=$("marketType").value,name=$("partyName").value.trim().toLowerCase();if(!d||!name)return;const p=priorRecord(state.market,d,x=>x.type===t&&(x.name||"").trim().toLowerCase()===name);$("marketOpening").value=p?p.closingDue:0;$("emptyDueOpening").value=p?p.emptyDue||0:0;$("marketCreditOpening").value=p?p.emptyCredit||0:0;$("marketFilledCreditOpening").value=p?p.filledCredit||0:0;previewMarket();}
+function carryMarketOpening(){
+ const d=$("marketDate").value,t=$("marketType").value,name=$("partyName").value.trim().toLowerCase();if(!d||!name||editingMarketId)return;
+ const match=x=>x.type===t&&(x.name||"").trim().toLowerCase()===name;
+ const same=state.market.filter(x=>x.date===d&&match(x)).sort((a,b)=>(a.savedAt||"").localeCompare(b.savedAt||""));
+ const p=same.length?same[same.length-1]:priorRecord(state.market,d,match);
+ $("marketOpening").value=p?p.closingDue:0;$("emptyDueOpening").value=p?p.emptyDue||0:0;$("marketCreditOpening").value=p?p.emptyCredit||0:0;$("marketFilledCreditOpening").value=p?p.filledCredit||0:0;previewMarket();
+}
 $("stockDate").addEventListener("change",carryStockOpening);$("stockType").addEventListener("change",carryStockOpening);
 $("marketDate").addEventListener("change",carryMarketOpening);$("marketType").addEventListener("change",carryMarketOpening);$("partyName").addEventListener("change",carryMarketOpening);
 
@@ -271,7 +340,7 @@ function calcDueAndEmptyCredit(opening,emptyCreditOpening,filledCreditOpening,gi
 }
 function previewMarket(){const r=calcDueAndEmptyCredit(n("marketOpening"),n("marketCreditOpening"),n("marketFilledCreditOpening"),n("marketGiven"),n("marketEmptyBack"),n("marketFilledBack"));$("marketPreview").textContent=`${r.due}`;$("emptyDuePreview").textContent=Math.max(0,n("emptyDueOpening")+n("emptyGiven")-n("emptyReceived"));}
 ["marketOpening","emptyDueOpening","emptyGiven","emptyReceived","marketGiven","marketEmptyBack","marketFilledBack"].forEach(id=>$(id).addEventListener("input",previewMarket));
-$("stockForm").addEventListener("submit",e=>{e.preventDefault();let closingFilled=n("openFilled")+n("plantFilled")-n("filledIssued"),closingEmpty=n("openEmpty")+n("emptyReturned")-n("emptySent");if(closingFilled<0||closingEmpty<0)return alert("क्लोजिंग स्टॉक शून्य से कम नहीं हो सकता। एंट्री जाँचें।");const obj={date:$("stockDate").value,type:$("stockType").value,openFilled:n("openFilled"),plantFilled:n("plantFilled"),filledIssued:n("filledIssued"),closingFilled,openEmpty:n("openEmpty"),emptyReturned:n("emptyReturned"),emptySent:n("emptySent"),closingEmpty,note:$("stockNote").value};if(editingStockId){const id=editingStockId;const old=state.stock.find(x=>x.id===id);if(!old)return;Object.assign(old,obj);save();editStockRecord(id);alert("दैनिक स्टॉक एंट्री में सुधार सेव हो गया। पुराने रिकॉर्ड सुरक्षित हैं।");}else{addRecord("stock",obj);resetStockEdit();alert("दैनिक स्टॉक सेव हो गया।");}});
+$("stockForm").addEventListener("submit",e=>{e.preventDefault();let closingFilled=n("openFilled")+n("plantFilled")-n("filledIssued"),closingEmpty=n("openEmpty")+n("emptyReturned")-n("emptySent");if(closingFilled<0||closingEmpty<0)return alert("क्लोजिंग स्टॉक शून्य से कम नहीं हो सकता। एंट्री जाँचें।");const obj={date:$("stockDate").value,type:$("stockType").value,openFilled:n("openFilled"),plantFilled:n("plantFilled"),filledIssued:n("filledIssued"),closingFilled,openEmpty:n("openEmpty"),emptyReturned:n("emptyReturned"),emptySent:n("emptySent"),closingEmpty,note:$("stockNote").value};if(editingStockId){const id=editingStockId;const old=state.stock.find(x=>x.id===id);if(!old)return;Object.assign(old,obj);recalcStockGroup(obj.type);save();resetStockEdit();alert("दैनिक स्टॉक एंट्री में सुधार सेव हो गया। आगे की तारीखों का स्टॉक भी दोबारा मिलाया गया है।");}else{addRecord("stock",obj);recalcStockGroup(obj.type);save();resetStockEdit();alert("दैनिक स्टॉक सेव हो गया।");}});
 $("cancelStockEdit").addEventListener("click",resetStockEdit);
 document.addEventListener("click",e=>{const b=e.target.closest("[data-edit-stock]");if(b)editStockRecord(b.dataset.editStock);});
 $("marketForm").addEventListener("submit",e=>{
@@ -285,10 +354,28 @@ $("marketForm").addEventListener("submit",e=>{
   recalcLedgerGroup(state.market,oldName,oldType);recalcLedgerGroup(state.market,name,type);
   resetMarketEdit();save();alert("मार्केट एंट्री में सुधार सेव हो गया। आगे की पार्टी बकाया एंट्रियाँ भी दोबारा मिलाई गई हैं।");
  }else{
-  addRecord("market",obj);e.target.reset();$("marketDate").value=today;previewMarket();renderSavedParties();alert("पार्टी एंट्री सेव हो गई।");carryMarketOpening();
+  addRecord("market",obj);recalcLedgerGroup(state.market,name,type);save();e.target.reset();$("marketDate").value=today;previewMarket();renderSavedParties();alert("पार्टी एंट्री सेव हो गई।");carryMarketOpening();
  }
 });
 $("cancelMarketEdit").addEventListener("click",resetMarketEdit);
+
+$("staffForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const name=$("staffName").value.trim(),type=$("staffType").value;
+ const calc=calcDueAndEmptyCredit(n("staffOpening"),n("staffCreditOpening"),n("staffFilledCreditOpening"),n("staffGiven"),n("staffEmptyBack"),n("staffFilledBack"));
+ const obj={date:$("staffDate").value,name,phone:$("staffPhone").value,type,opening:n("staffOpening"),creditOpening:n("staffCreditOpening"),filledCreditOpening:n("staffFilledCreditOpening"),given:n("staffGiven"),emptyBack:n("staffEmptyBack"),filledBack:n("staffFilledBack"),closingDue:calc.due,emptyCredit:calc.emptyCredit,filledCredit:calc.filledCredit,emptyDueOpening:n("staffEmptyDueOpening"),emptyGiven:n("staffEmptyGiven"),emptyReceived:n("staffEmptyReceived"),emptyDue:Math.max(0,n("staffEmptyDueOpening")+n("staffEmptyGiven")-n("staffEmptyReceived")),note:$("staffNote").value};
+ if(editingStaffId){
+  const old=state.staff.find(x=>x.id===editingStaffId);if(!old)return;const oldName=old.name,oldType=old.type;Object.assign(old,obj);
+  recalcLedgerGroup(state.staff,oldName,oldType);recalcLedgerGroup(state.staff,name,type);resetStaffEdit();save();alert("स्टाफ एंट्री और आगे का बकाया दोबारा मिलाकर सेव हो गया।");
+ }else{
+  state.staff.push({...obj,id:crypto.randomUUID(),savedAt:new Date().toISOString()});recalcLedgerGroup(state.staff,name,type);save();resetStaffEdit();alert("स्टाफ एंट्री सेव हो गई।");
+ }
+});
+$("cancelStaffEdit").addEventListener("click",resetStaffEdit);
+document.addEventListener("click",e=>{const b=e.target.closest("[data-edit-staff]");if(b)editStaffRecord(b.dataset.editStaff);});
+["staffOpening","staffGiven","staffEmptyBack","staffFilledBack","staffEmptyDueOpening","staffEmptyGiven","staffEmptyReceived"].forEach(id=>$(id).addEventListener("input",previewStaff));
+["staffDate","staffType","staffName"].forEach(id=>$(id).addEventListener("change",carryStaffOpening));
+
 document.addEventListener("click",e=>{const b=e.target.closest("[data-edit-market]");if(b)editMarketRecord(b.dataset.editMarket);});
 document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===b.dataset.tab));}));
 $("saveTargets").onclick=()=>{targetTotals={};extraPlantTotals={};[["14 kg","target14","extra14"],["19 kg","target19","extra19"],["10 kg","target10","extra10"],["5 kg","target5","extra5"]].forEach(([t,id,extraId])=>{const v=$(id).value.trim(),ex=$(extraId).value.trim();if(v!=="")targetTotals[t]=Math.max(0,Math.floor(Number(v)));if(ex!=="")extraPlantTotals[t]=Math.max(0,Math.floor(Number(ex)));});localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));localStorage.setItem(key+"_plant_extra",JSON.stringify(extraPlantTotals));if(settings.url&&settings.token)syncNow(true);$("targetMessage").textContent="मूल लक्ष्य और अतिरिक्त प्लांट स्टॉक सेव हो गया।";render();};
@@ -326,7 +413,7 @@ function restoreFromSheet(){
   if(!result||!result.success||!result.data){$("syncMessage").textContent="Sheet से डेटा नहीं मिला। URL, सुरक्षा कोड और Deploy जाँचें।";return}
   const d=result.data;
   if(!Array.isArray(d.stock)||!Array.isArray(d.market)){$("syncMessage").textContent="Sheet में डेटा का प्रारूप सही नहीं है।";return}
-  state={stock:d.stock,market:d.market};
+  state={...state,stock:d.stock,market:d.market,staff:Array.isArray(d.staff)?d.staff:[]};
   targetTotals=d.targetTotals||targetTotals;
   extraPlantTotals=d.extraPlantTotals||extraPlantTotals;
   localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));
@@ -341,9 +428,9 @@ function restoreFromSheet(){
 }
 $("restoreFromSheet").onclick=restoreFromSheet;
 // फोन में डाउनलोड होने वाला JSON बैकअप; PIN hash और Script URL जानबूझकर शामिल नहीं हैं।
-$("exportBackup").onclick=()=>{const payload={app:"HP Gas Hisab Manager 2.0",version:2,exportedAt:new Date().toISOString(),data:state,targetTotals};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`HP-Gas-Backup-${localDate()}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);$("backupMessage").textContent="बैकअप डाउनलोड शुरू हो गया। फाइल को सुरक्षित रखें।";};
+$("exportBackup").onclick=()=>{const payload={app:"HP Gas Hisab Manager 2.0",version:2,exportedAt:new Date().toISOString(),data:state,targetTotals,extraPlantTotals};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`HP-Gas-Backup-${localDate()}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);$("backupMessage").textContent="बैकअप डाउनलोड शुरू हो गया। फाइल को सुरक्षित रखें।";};
 $("importBackupBtn").onclick=()=>$("importBackupFile").click();
-$("importBackupFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());const d=payload.data;if(!d||!Array.isArray(d.stock)||!Array.isArray(d.market))throw new Error("गलत बैकअप फाइल");if(!confirm("मौजूदा फोन डेटा की जगह बैकअप का डेटा लोड होगा। पहले मौजूदा डेटा का बैकअप लें। क्या जारी रखें?"))return;state=d;state.market=Array.isArray(state.market)?state.market:[];state.stock=Array.isArray(state.stock)?state.stock:[];targetTotals=payload.targetTotals||targetTotals;localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));save();$("backupMessage").textContent="बैकअप सफलतापूर्वक वापस लोड हो गया।";alert("बैकअप वापस आ गया।");}catch(err){$("backupMessage").textContent="बैकअप नहीं खुला: "+err.message;}finally{e.target.value="";}});
+$("importBackupFile").addEventListener("change",async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());const d=payload.data;if(!d||!Array.isArray(d.stock)||!Array.isArray(d.market))throw new Error("गलत बैकअप फाइल");if(!confirm("मौजूदा फोन डेटा की जगह बैकअप का डेटा लोड होगा। पहले मौजूदा डेटा का बैकअप लें। क्या जारी रखें?"))return;state=d;state.market=Array.isArray(state.market)?state.market:[];state.stock=Array.isArray(state.stock)?state.stock:[];state.staff=Array.isArray(state.staff)?state.staff:[];targetTotals=payload.targetTotals||targetTotals;extraPlantTotals=payload.extraPlantTotals||extraPlantTotals;localStorage.setItem(key+"_targets",JSON.stringify(targetTotals));localStorage.setItem(key+"_plant_extra",JSON.stringify(extraPlantTotals));save();$("backupMessage").textContent="बैकअप सफलतापूर्वक वापस लोड हो गया।";alert("बैकअप वापस आ गया।");}catch(err){$("backupMessage").textContent="बैकअप नहीं खुला: "+err.message;}finally{e.target.value="";}});
 
 function openReport(tab){
   document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
@@ -424,7 +511,7 @@ pdfButton.className="primary";
 pdfButton.style.cssText="width:100%;margin:12px 0;padding:16px;border-radius:12px;font-size:17px";
 pdfButton.addEventListener("click",createFullPDFReport);
 $("dashboard").appendChild(pdfButton);
- renderSavedParties();render();previewStock();previewMarket();carryStockOpening();
+ renderSavedParties();render();previewStock();previewMarket();previewStaff();carryStockOpening();
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
 </script>
 </body></html>
