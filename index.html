@@ -96,7 +96,8 @@
 <label>आज खाली सिलेंडर जमा हुए<input type="number" min="0" id="staffEmptyReceived" value="0"></label>
 </div>
 <div class="calc"><span>भरे सिलेंडर बकाया: <b id="staffPreview">0</b></span><span>खाली सिलेंडर बकाया: <b id="staffEmptyPreview">0</b></span><span>अतिरिक्त खाली जमा: <b id="staffCreditPreview">0</b></span></div>
-<input type="hidden" id="staffCreditOpening" value="0"><input type="hidden" id="staffFilledCreditOpening" value="0">\n<label>नोट<input id="staffNote" placeholder="वैकल्पिक"></label>
+<input type="hidden" id="staffCreditOpening" value="0"><input type="hidden" id="staffFilledCreditOpening" value="0">
+<label>नोट<input id="staffNote" placeholder="वैकल्पिक"></label>
 <button class="primary" id="staffSubmitBtn">स्टाफ एंट्री सेव करें</button>
 <button class="secondary" type="button" id="cancelStaffEdit" hidden>एडिट रद्द करें</button>
 </form>
@@ -293,7 +294,8 @@ $("marketDate").addEventListener("change",carryMarketOpening);$("marketType").ad
 
 function render(){
  let filled=0,empty=0,marketTotal=0,totalEmptyCredit=0,totalFilledCredit=0,totalEmptyDue=0;
- const marketBalances=latestBalances(state.market,x=>x.name+"|"+x.type);\n  const staffBalancesForStock=latestBalances(state.staff||[],x=>x.name+"|"+x.type);
+ const marketBalances=latestBalances(state.market,x=>x.name+"|"+x.type);
+  const staffBalancesForStock=latestBalances(state.staff||[],x=>x.name+"|"+x.type);
  marketTotal=sum(marketBalances,x=>Number(x.closingDue||0));
  totalEmptyCredit=sum(marketBalances,x=>Number(x.emptyCredit||0));
  totalFilledCredit=sum(marketBalances,x=>Number(x.filledCredit||0));
@@ -320,7 +322,8 @@ function render(){
  $("reconcileSummary").innerHTML=TYPES.map(t=>{
   const f=latestStock(t.id,"closingFilled"),e=latestStock(t.id,"closingEmpty");
   const m=sum(marketBalances.filter(x=>x.type===t.id),x=>Number(x.closingDue||0)+Number(x.emptyDue||0));
-  const actual=f+e+m;accountedAll+=actual;
+  const staffDue=sum(staffBalancesForStock.filter(x=>x.type===t.id),x=>Number(x.closingDue||0)+Number(x.emptyDue||0));
+  const actual=f+e+m+staffDue;accountedAll+=actual;
   const target=Number(targetTotals[t.id]||0),extra=Number(extraPlantTotals[t.id]||0),expected=target+extra;extraAll+=extra;
   if(target>0){targetAll+=target;targetsSet++;}
   const diff=expected-actual;
@@ -329,6 +332,11 @@ function render(){
   return `<div class="type-row" style="background:${color};grid-template-columns:70px 1fr 1fr"><b>${t.id}</b><span>मूल लक्ष्य ${target||'—'}<small>प्लांट अतिरिक्त ${extra} · कुल लक्ष्य ${expected}</small></span><span>हिसाब ${actual}<b>${status}</b></span></div>`;
  }).join("");
  if(targetsSet){const expectedAll=targetAll+extraAll,diff=expectedAll-accountedAll;$("reconcileSummary").insertAdjacentHTML("beforeend",`<div class="calc"><span>मूल लक्ष्य: <b>${targetAll}</b></span><span>प्लांट अतिरिक्त: <b>${extraAll}</b></span><span>कुल लक्ष्य: <b>${expectedAll}</b></span><span>कुल हिसाब: <b>${accountedAll}</b></span><span>${diff>0?`कुल कमी: ${diff}`:diff<0?`कुल अधिक: ${Math.abs(diff)}`:'कुल मिलान सही'}</span></div>`)}
+ const staffBalances=latestBalances(state.staff||[],x=>x.name+"|"+x.type);
+ $("staffFilledDueTotal").textContent=sum(staffBalances,x=>Number(x.closingDue||0));
+ $("staffEmptyDueTotal").textContent=sum(staffBalances,x=>Number(x.emptyDue||0));
+ $("staffSummary").innerHTML=staffBalances.map(x=>`<div class="record"><strong>${esc(x.name||"बिना नाम")} · ${typeLabel(x.type)}</strong><div>भरे सिलेंडर बकाया: <b>${Number(x.closingDue||0)}</b> | खाली सिलेंडर बकाया: <b>${Number(x.emptyDue||0)}</b></div><div>अतिरिक्त खाली जमा: <b>${Number(x.emptyCredit||0)}</b> | अतिरिक्त भरे जमा: <b>${Number(x.filledCredit||0)}</b></div><div class="muted">${esc(x.phone||"")} · अंतिम एंट्री: ${esc(x.date||"")}</div></div>`).join("")||'<div class="record">अभी स्टाफ की कोई एंट्री सेव नहीं है।</div>';
+ $("staffRows").innerHTML=(state.staff||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.savedAt||"").localeCompare(a.savedAt||"")).slice(0,30).map(x=>`<div class="record"><strong>${esc(x.name||"बिना नाम")} · ${typeLabel(x.type)}</strong><div>भरे बकाया: <b>${Number(x.closingDue||0)}</b> | खाली बकाया: <b>${Number(x.emptyDue||0)}</b> | खाली जमा: <b>${Number(x.emptyCredit||0)}</b></div><div class="muted">${esc(x.date||"")} · भरे दिए ${Number(x.given||0)} · खाली दिए ${Number(x.emptyGiven||0)} · खाली वापस ${Number(x.emptyReceived||0)}</div><div class="record-actions"><button type="button" class="edit-btn" data-edit-staff="${esc(x.id)}">✏️ एडिट करें</button></div></div>`).join("")||'<div class="record">अभी कोई स्टाफ एंट्री सेव नहीं है।</div>';
  $("stockRows").innerHTML=state.stock.slice(-12).reverse().map(x=>`<div class="record"><strong>${x.date} · ${typeLabel(x.type)}</strong><div>भरा: ${x.closingFilled} | खाली: ${x.closingEmpty}</div><div class="muted">${esc(x.note||"")}</div><div class="record-actions"><button type="button" class="edit-btn" data-edit-stock="${esc(x.id)}">✏️ एडिट करें</button></div></div>`).join("")||'<div class="record">अभी कोई एंट्री नहीं है।</div>';
  $("marketRows").innerHTML=state.market.slice(-20).reverse().map(x=>`<div class="record"><strong>${esc(x.name)} · ${typeLabel(x.type)}</strong><div>भरे बकाया: <b>${x.closingDue}</b> | खाली उधार बकाया: <b>${x.emptyDue||0}</b> | खाली क्रेडिट: <b>+${x.emptyCredit||0}</b> | भरा क्रेडिट: <b>+${x.filledCredit||0}</b> | पैसे: ₹${x.moneyDue}</div><div class="muted">${x.date} · दिए ${x.given} · खाली वापस ${x.emptyBack}</div><div class="record-actions"><button type="button" class="edit-btn" data-edit-market="${esc(x.id)}">✏️ एडिट करें</button></div></div>`).join("")||'<div class="record">अभी कोई पार्टी एंट्री नहीं है।</div>';
 }
